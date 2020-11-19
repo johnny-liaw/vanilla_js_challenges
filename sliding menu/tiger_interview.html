@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock interview</title>
+  <style>
+
+    .container {
+      display: flex;
+      position: relative;
+    }
+
+    .item {
+      width: 150px;
+    }
+
+    .under-line {
+      width: 50px;
+      height: 5px;
+      background-color: orange;
+      position:absolute;
+      z-index: 100;
+
+      --offset: 0px;
+      transform: translateX(var(--offset));
+      transition: transform .5s linear;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="item">Item 1</div>
+    <div class="item">Item 2</div>
+    <div class="item">Item 3</div>
+    <div class="item">Item 4</div>
+    <div class="item">Item 5</div>
+  </div>
+  <div class="under-line"></div>
+</body>
+</html>
+<script>
+  console.log('js loaded');
+
+  const items = document.querySelectorAll('.item');
+  const underLine = document.querySelector('.under-line');
+
+  for(let i = 0; i < items.length; i++) {
+    items[i].addEventListener('click', () => moveToItem(i));
+  }
+
+  const moveToItem = index => {
+    const selectedItem = items[index];
+    underLine.style.setProperty('--offset', `${selectedItem.getBoundingClientRect().x}px`);
+  }
+  // const el = xxx
+  // el.offsetWdith
+
+  // el.getBoundingClientRect()
+</script>

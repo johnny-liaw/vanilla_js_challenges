@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0
+        }
+        .container {
+            margin-top: 23px;
+            margin-left: 50px;
+            width: 200px;
+            height: 200px;
+            border: 5px solid black;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .toy {
+            width: 20px;
+            height: 20px;
+            border: 1px solid red;
+            transition: linear 0.2s;
+            box-sizing: border-box;
+            position: absolute;
+            /* transform-origin: 'center center' */
+        }
+
+    </style>
+</head>
+<body>
+   <div class='container'>
+       <div class='toy'></div>
+   </div> 
+
+   <script>
+       // using translate
+       document.addEventListener('DOMContentLoaded', function() {
+           const container = document.querySelector('.container');
+           const toy = document.querySelector('.toy');
+           toy.style.transformOrigin = 'center center'
+           container.addEventListener('click', moveToyPosition)
+
+           // mistake: centerX and centerY is not the center of the box. but rather
+           // the top left of the red box is the actual pivot
+           // translate is relative to where it starts.
+           // position: absolute is relative to the view port.
+           function moveToy(e) {
+                console.log(e.clientX, e.clientY)
+                const { top, left, right, bottom } = e.target.getBoundingClientRect();
+                console.table(e.target.getBoundingClientRect())
+                let toyHalfHeight = toy.getBoundingClientRect().height / 2; 
+                let toyHalfWidth = toy.getBoundingClientRect().height / 2
+                let toyHeight = toy.getBoundingClientRect().height
+                let toyWidth = toy.getBoundingClientRect().width
+                let centerX = e.clientX - toyHalfWidth;
+                let centerY = e.clientY - toyHalfHeight;
+                console.log(centerX, centerY)
+                if(centerX >= right - toyWidth) centerX = right - toyWidth;
+                else if (centerX <= left + toyWidth) centerX = left + toyWidth;
+                
+                if(centerY >= bottom - toyHeight) centerY = bottom - toyHeight;
+                else if (centerY <= top + toyHeight) center = top + toyHeight;
+                console.table(centerX, centerY)
+                toy.style.transform = `translate(${centerX}px, ${centerY}px)`
+           }
+
+           // much better solution.
+           function moveToyPosition(e) {
+                const { top, left, right, bottom, width, height } = container.getBoundingClientRect(); 
+                const { clientX: clickX, clientY: clickY } = e;
+                const { clientTop, clientLeft }  = container
+                const { clientWidth, clientHeight } = toy
+
+                let newLeft = clickX - left - clientLeft - clientWidth / 2
+                let newTop = clickY - top - clientTop - clientHeight / 2
+
+                if(newLeft < 0) newLeft = 0
+                if(newTop < 0) newTop = 0
+                if(newLeft + clientWidth > width) {
+                    console.log('hi')
+                    newLeft = width - clientWidth - clientLeft * 2
+                }
+                if(newTop + clientHeight > height) {
+                    newTop = height - clientHeight - clientTop * 2
+                }
+                // if()
+
+                console.log(newLeft, newTop)
+                toy.style.left = newLeft + 'px'
+                toy.style.top = newTop + 'px'
+           }
+
+       })
+   </script>
+</body>
+</html>

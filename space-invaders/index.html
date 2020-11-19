@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            height: 400px;
+            width: 400px;
+        }
+        .square {
+            width: 20px;
+            height: 20px;
+            background: lightblue;
+            border: 1px solid grey;
+            box-sizing: border-box;
+        }
+        .alien {
+            background-color: purple;
+        }
+        .human {
+            background-color: red;
+        }
+        .laser {
+            background-color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="board"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const board = document.querySelector('.board');
+        const WIDTH = 20
+        const squares = []
+        let alienDirection = 'E'
+        let humanPos = 370
+        let laserInterval = null
+        const initialAlienGrid = {
+            startCol: 4,
+            endCol: 16,
+            startRow: 1,
+            endRow: 5,
+        }
+        let laserPos = []
+
+        function createBoard() {
+            for(let i = 0; i < WIDTH*WIDTH; i++) {
+                const square = document.createElement('div')
+                square.classList.add('square')
+                square.id = i
+                board.appendChild(square)
+                squares.push(square)
+            }
+        }
+        createBoard();
+
+        function createAliens({ startCol, endCol, startRow, endRow }) {
+            for(let row = startRow; row < endRow; row++) {
+                for(let col = startCol; col < endCol; col++) {
+                    const squareNum = row * WIDTH + col;
+                    squares[squareNum].classList.add('alien')
+                }
+            }
+        }
+        createAliens(initialAlienGrid)
+
+        function createHuman() { 
+            squares[humanPos].classList.add('human')
+        }
+        createHuman()
+
+        function moveAliens() {
+            if(alienDirection === 'E') {
+                for(let i = WIDTH*WIDTH - 1; i >= 1; i--) {
+                    let ahead = i - 1;
+                    if(squares[ahead].classList.contains('alien') && ahead % 20 !== 18) {
+                        squares[ahead].classList.remove('alien')
+                        squares[i].classList.add('alien')
+                    } else if (squares[ahead].classList.contains('alien') && ahead % 20 === 18) {
+                        alienDirection = 'W'
+                        moveAliensDown()
+                        break
+                    }
+                }
+            } else {
+                for(let i = 0; i < WIDTH*WIDTH - 1; i++) {
+                    let ahead = i + 1;
+                    if(squares[ahead].classList.contains('alien') && ahead % 20 !== 1) {
+                        squares[ahead].classList.remove('alien')
+                        squares[i].classList.add('alien')
+                    } else if (squares[ahead].classList.contains('alien') && ahead % 20 === 1) {
+                        alienDirection = 'E'
+                        moveAliensDown()
+                        break
+                    }
+                }
+            }
+        }
+
+        function moveAliensDown() {
+            for(let i = WIDTH*WIDTH - 1; i >= 20; i--) {
+                let ahead = i - 20
+                if(squares[ahead].classList.contains('alien')) {
+                    squares[ahead].classList.remove('alien')
+                    squares[i].classList.add('alien')
+                }
+            }
+        }
+
+        function handleUserInput(e) {
+            if(e.key === 'ArrowLeft') {
+                squares[humanPos].classList.remove('human')
+                squares[humanPos-1].classList.add('human')
+                humanPos -= 1 
+            } else if (e.key === 'ArrowRight') {
+                squares[humanPos].classList.remove('human')
+                squares[humanPos+1].classList.add('human')
+                humanPos += 1  
+            } else if (e.code === 'Space') {
+                console.log('fire')
+                fire()
+            }
+        }
+
+        function fire() {
+            laserPos.push(humanPos-20)
+            squares[humanPos-20].classList.add('laser')
+            if(!laserInterval) {
+                laserInterval = window.setInterval(moveLasers, 100)
+            }
+        }
+
+        function moveLasers() {
+            console.log(laserPos)
+            let tempArray = []
+            laserPos.forEach(pos => {
+                if(pos < 20) {
+                    squares[pos].classList.remove('laser')
+                } else {
+                    squares[pos].classList.remove('laser')
+                    let newLaserPos = pos - 20
+                    if(squares[newLaserPos].classList.contains('alien')) {
+                        squares[newLaserPos].classList.remove('alien')
+                    } else {
+                        squares[newLaserPos].classList.add('laser')
+                        tempArray.push(pos-20)
+                    }
+                }
+            })
+            laserPos = tempArray  
+        }
+
+        function tick() {
+            moveAliens()
+        }
+        window.addEventListener('keydown', handleUserInput)
+        const interval = window.setInterval(tick, 1000)
+
+        })
+    </script>
+</body>
+</html>

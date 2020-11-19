@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 50px);
+      grid-template-rows: repeat(7, 50px);
+      grid-template-areas: 
+        'display display display display'
+        'display display display display'
+        'clear clear clear divide'
+        'seven eight nine multiply'
+        'four five six minus'
+        'one two three plus'
+        'zero zero zero calc'
+    }
+    .display {
+      background-color: lightblue;
+      grid-area: display;
+    }
+    .button {
+      font-size: 20px;
+      font-family:monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .action {
+      cursor: pointer;
+      background-color: orange;
+      border: 1px solid black;
+    }
+    .clear {
+      background-color: grey;
+      color: white;
+      grid-area: clear;
+    }
+    .divide {
+      grid-area: divide;
+    }
+    .multiply {
+      grid-area: multiply;
+    }
+    .minus {
+      grid-area: minus;
+    }
+    .plus {
+      grid-area: plus;
+    }
+    .calc {
+      grid-area: calc;
+    }
+    .zero {
+      grid-area: zero;
+    }
+    .one {
+      grid-area: one;
+    }
+    .two {
+      grid-area: two;
+    }
+    .three {
+      grid-area: three;
+    }
+    .four {
+      grid-area: four;
+    }
+    .five {
+      grid-area: five;
+    }
+    .six {
+      grid-area: six;
+    }
+    .seven {
+      grid-area: seven;
+    }
+    .eight {
+      grid-area: eight;
+    }
+    .nine {
+      grid-area: nine;
+    }
+    .number {
+      background-color: lightgreen;
+      border: 1px solid grey;
+      cursor: pointer;
+    }
+    .calc {
+      background-color: purple;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-container">
+    <div class="button display">0</div>
+    <div class="button clear">C</div>
+    <div class="button action divide">÷</div>
+    <div class="button action multiply">x</div>
+    <div class="button action minus">-</div>
+    <div class="button action plus">+</div>
+    <div class="button calc">=</div>
+    <div class="button number zero">0</div>
+    <div class="button number one">1</div>
+    <div class="button number two">2</div>
+    <div class="button number three">3</div>
+    <div class="button number four">4</div>
+    <div class="button number five">5</div>
+    <div class="button number six">6</div>
+    <div class="button number seven">7</div>
+    <div class="button number eight">8</div>
+    <div class="button number nine">9</div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const numbers = document.querySelectorAll('.number');
+      const calcBtn = document.querySelector('.calc');
+      const actions = document.querySelectorAll('.action');
+      const clearBtn = document.querySelector('.clear');
+      const display = document.querySelector('.display');
+      let number1 = display.textContent;
+      let action = null;
+      let number2 = null;
+
+      function performAction() {
+        console.log(number1, number2, action);
+      }
+
+      actions.forEach(actionPad => actionPad.onclick = handleActionClick)
+      numbers.forEach(numberPad => numberPad.onclick = handleNumClick);
+      clearBtn.onclick = handleClear;
+      calcBtn.onclick = handleCalc;
+      
+      function handleCalc(e) {
+        console.log('calc')
+        number2 = display.textContent;
+        if(!action) {
+          console.log('incomplete statemenet')
+          return;
+        }
+        performAction()
+      }
+
+      function handleClear(e) {
+        display.textContent = 0;
+        number1 = display.textContent;
+        action = null;
+        number2 = null;
+      }
+
+      function handleActionClick(e) {
+        const selectionAction = e.target.textContent;
+        if(selectionAction === '÷') {
+          console.log('divide')
+          action = 'divide';
+        } else if (selectionAction === 'x') {
+          console.log('multiply')
+          action = 'multiply';
+        } else if (selectionAction === '+') {
+          console.log('plus')
+          action = 'plus';
+        } else if (selectionAction === '-') {
+          console.log('minus');
+          action = 'minus';
+        } else {
+          console.log('not recognised')
+        }
+        number1 = display.textContent;
+        display.textContent = '0';
+      }
+
+      function handleNumClick(e) {
+        if(display.textContent.length === 1 &&
+        display.textContent === '0') {
+          if(e.target.textContent !== '0') {
+            display.textContent = e.target.textContent;
+          }
+        } else {
+          display.textContent += e.target.textContent;
+        }
+      }
+    })
+  </script>
+</body>
+</html>

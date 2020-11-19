@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .clock-container {
+      position: relative;
+      height: 400px;
+      width: 400px;
+      border: 1px solid black;
+      border-radius: 50%;
+    }
+    .hand {
+      position: absolute;
+      transform-origin: 0% 50%;
+    }
+    .hour {
+      width: 100px;
+      height: 5px;
+      border: 1px solid red;
+      background-color: red;
+      left: 50%;
+      top: 50%;
+    }
+    .minute {
+      width: 140px;
+      height: 5px;
+      border: 1px solid blue;
+      background-color: blue;
+      left: 50%;
+      top: 50%;
+    }
+    .second {
+      width: 170px;
+      height: 5px;
+      border: 1px solid green;
+      background-color: green;
+      left: 50%;
+      top: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-container">
+    <div class="hand hour"></div>
+    <div class="hand minute"></div>
+    <div class="hand second"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const hourHand = document.querySelector('.hour');
+      const minuteHand = document.querySelector('.minute');
+      const secondHand = document.querySelector('.second');
+      console.log(secondHand.classList)
+
+      window.setInterval(tick, 1000);
+
+      function tick() {
+        const date = new Date();
+        const secondsTime = date.getSeconds();
+        const minuteTime = date.getMinutes();
+        const hourTime = date.getHours();
+
+        console.log(secondsTime, minuteTime, hourTime);
+
+        const secondDegree = secondsTime * 6;
+        const minuteDegree = minuteTime * 6;
+        const hourDegree = hourTime * 30;
+
+        console.log(secondDegree, minuteDegree, hourDegree);
+
+        secondHand.style.transform = `translateY(-50%) rotate(${secondDegree - 90}deg)`
+        minuteHand.style.transform = `rotate(${minuteDegree - 90}deg)`
+        hourHand.style.transform = `rotate(${hourDegree - 90}deg)`
+
+      }
+    })
+  </script>
+</body>
+</html>

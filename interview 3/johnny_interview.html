@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <script>
+        console.log('js loaded!')
+
+        const body = document.querySelector('body')
+
+        const data = {
+            ['Text box 1']: 'Tiger',
+            ['Number box 2']: 11,
+            ['Group box 1']: {
+                ['Text box 3']: 'Tiger',
+                ['Number box 4']: 11,
+                ['Group box 2']: {
+                    ['Text box 5']: 'Tiger',
+                    ['Number box 6']: 11
+                }
+            }
+        }
+
+        function generateNodes(data, level) {
+            console.log(data)
+            Object.keys(data).forEach((prop) => {
+                const inputType = prop.split(' ')[0].toLowerCase()
+                if (inputType !== 'group') {
+                    const container = document.createElement('div')
+                    const marginLeft = 20 * level
+                    container.style.marginLeft = marginLeft + 'px'
+                    const title = document.createElement('div')
+                    title.textContent = prop
+                    const input = document.createElement('input')
+                    input.data = data
+                    input.type = inputType
+                    input.id = prop
+                    input.onkeyup = inputOnChangeHandler
+                    container.appendChild(title)
+                    container.appendChild(input)
+                    body.appendChild(container)
+                } else {
+                    generateNodes(data[prop], level + 1)
+                }
+            })
+        }
+        generateNodes(data, 0)
+
+        function inputOnChangeHandler(e) {
+            const id = e.target.id
+            e.target.data[id] = e.target.value
+            console.log(data)
+        }
+    </script>
+</body>
+
+</html>

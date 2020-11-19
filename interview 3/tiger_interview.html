@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #ddd;
+
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .container {
+        background-color: lightBlue;
+        height: 500px;
+        width: 100vw;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card {
+        width: 150px;
+        border: 5px solid black;
+        border-radius: 10px;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+        height: 400px;
+        position: relative;
+    }
+
+    .card:first-child{
+      height: 300px;
+      margin-right: 50px;
+    }
+
+    .card:last-child{
+      height: 300px;
+      margin-left: 50px;
+    }
+
+    .btn {
+      height: 80px;
+      width: 80px;
+      border-radius: 50%;
+      border: 2px solid black;
+      font-size: 20px;
+      display: flex;
+      justify-content:center;
+      align-items: center;
+      position:absolute;
+      background-color: white;
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    .btn-open {
+      top: 100%;
+      transform: translateY(-50%)
+    }
+
+    .btn-swap {
+      top: 0;
+      transform: translate(100%, -50%);
+    }
+
+    .panel {
+      width: 100vw;
+      height: 100px;
+      background-color:pink;
+      transition: height ease 1s;
+    }
+
+    .invisible {
+      height: 0px;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel invisible" data-panel></div>
+  <div class="container" data-container>
+      <div class="card">
+        $15
+        <div class="btn btn-open" data-btn-open>OPEN</div>
+      </div>
+      <div class="card">$25</div>
+      <div class="card">
+        $35
+        <div class="btn btn-swap" data-btn-swap>SWAP</div>
+      </div>
+  </div>
+</body>
+</html>
+<script type="text/javascript">
+  console.log('js loaded');
+  
+  const btnOpen = document.querySelector('[data-btn-open]');
+  const panel = document.querySelector('[data-panel]');
+  const btnSwap = document.querySelector('[data-btn-swap]');
+  const container = document.querySelector('[data-container]');
+
+  btnOpen.addEventListener('click', () => {
+    panel.classList.toggle('invisible');
+  })
+
+  btnSwap.addEventListener('click', () => {
+    console.log('hi');
+    const firstCard = container.firstChild;
+    const lastCard = container.lastChild;
+    console.log(lastCard)
+    container.removeChild(lastCard);
+    // container.replaceChild(lastCard, firstCard);
+    // container.replaceChild(firstCard, lastCard);
+  });
+
+</script>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            display: flex;
+        }
+
+        .draggable-container {
+            position: relative;
+            height: 100vh;
+            border: 1px solid black;
+            width: 10vh;
+            resize: both;
+            overflow: auto;
+        }
+
+        .drop-container {
+            overflow: hidden;
+            height: 100vh;
+            border: 1px solid red;
+            width: 80%;
+            position: relative;
+        }
+
+        .red-sqr {
+            width: 8vh;
+            height: 8vh;
+            background-color: red;
+        }
+
+        .green-sqr {
+            width: 8vh;
+            height: 8vh;
+            background-color: green;
+        }
+
+        .selected-sqr {
+            border: 1.5px dashed lightblue;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="draggable-container">
+
+            <div id="1" class="red-sqr" draggable='true'></div>
+            <div id="2" class="green-sqr" draggable='true'></div>
+        </div>
+        <div class="drop-container">
+
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropContainer = document.querySelector('.drop-container')
+            const draggableContainer = document.querySelector('.draggable-container')
+            let selectedNode = null
+
+            dropContainer.addEventListener('click', handleClick)
+
+            function handleClick(e) {
+                if (e.target.classList.contains('drop-container')) {
+                    if (selectedNode) {
+                        selectedNode.classList.toggle('selected-sqr')
+                        selectedNode = null
+                    }
+                } else {
+                    selectedNode = e.target
+                    e.target.classList.toggle('selected-sqr')
+                }
+            }
+
+            const draggables = Array.from(draggableContainer.children)
+
+            function getShiftPos(e) {
+                let shiftX = e.clientX - e.target.getBoundingClientRect().left
+                let shiftY = e.clientY - e.target.getBoundingClientRect().top
+                return { shiftX, shiftY }
+            }
+            draggables.forEach(child => {
+                child.addEventListener('dragstart', handleDragStart)
+            })
+
+            function handleDragStart(e, initial = true) {
+                console.log('drag start')
+                e.target.addEventListener('dragend', handleDragEnd)
+                const { shiftX, shiftY } = getShiftPos(e)
+                e.dataTransfer.setData('dragged', JSON.stringify({
+                    id: e.target.id,
+                    shiftX,
+                    shiftY,
+                    initial
+                }))
+            }
+
+            function handleDragEnd(e) {
+                e.target.removeEventListener('dragend', handleDragEnd)
+            }
+
+            dropContainer.addEventListener('dragover', (e) => e.preventDefault())
+            dropContainer.addEventListener('drop', handleDrop)
+
+            function handleDrop(e) {
+                const dropContainer = document.querySelector('.drop-container')
+                const { left, top } = dropContainer.getBoundingClientRect()
+                const { id, shiftX, shiftY, initial } = JSON.parse(e.dataTransfer.getData('dragged'))
+                // if dropping for the first time
+                let dragElement;
+                if (initial) {
+                    const dragElementRef = document.getElementById(id)
+                    dragElement = dragElementRef.cloneNode()
+                    let randomId = (Math.random() * 99 + 1) >> 0
+                    dragElement.setAttribute('id', randomId)
+                    dragElement.addEventListener('dragstart', (e) => handleDragStart(e, false))
+                } else {
+                    // moving an already dropped item
+                    dragElement = document.getElementById(id)
+                }
+                let dropPointerX = e.clientX - left
+                let dropPointerY = e.clientY - top
+                dragElement.style.left = dropPointerX - shiftX + 'px'
+                dragElement.style.top = dropPointerY - shiftY + 'px'
+                dragElement.style.position = 'absolute'
+                dropContainer.appendChild(dragElement)
+            }
+        });
+    </script>
+</body>
+
+</html>

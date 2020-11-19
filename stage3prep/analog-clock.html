@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .clock-container {
+      width: 500px;
+      height: 500px;
+      border-radius: 250px;
+      border: 1px solid black;
+      position: relative;
+    }
+    .hand {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center top;
+    }
+    .minute {
+      width: 5px;
+      height: 200px;
+      border: 1px solid red
+    }
+    .second {
+      width: 5px;
+      height: 220px;
+      border: 1px solid green;
+    }
+    .hour {
+      width: 5px;
+      height: 170px;
+      border: 1px solid blue;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-container">
+    <div class="hand minute"></div>
+    <div class="hand second"></div>
+    <div class="hand hour"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const secondHand = document.querySelector('.second');
+      const minuteHand = document.querySelector('.minute');
+      const hourHand = document.querySelector('.hour');
+
+      const interval = window.setInterval(renderTime, 1000);
+      function renderTime() {
+        const date = new Date();
+
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+        const hours = date.getHours();
+
+        const minuteDeg = minutes * 6;
+        const secondDeg = seconds * 6;
+        const hourDeg = hours * 30;
+
+        secondHand.style.transform = `translateX(-50%) rotate(${secondDeg - 180}deg)`
+        minuteHand.style.transform = `translateX(-50%) rotate(${minuteDeg - 180}deg)`
+        hourHand.style.transform = `translateX(-50%) rotate(${hourDeg - 180}deg)`
+      }
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+    }
+
+    .menutab {
+      margin-right: 50px;
+    }
+
+    .highlight {
+      height: 3px;
+      background-color: orange;
+      width: 50px;
+      position: absolute;
+      transition: width 0.5s ease-out, left 2s ease-in;
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="menutab">hello</div>
+  <div class="menutab">second</div>
+  <div class="menutab">xy</div>
+  <div class="menutab">khjaiuasdf</div>
+  <div class="menutab">hello</div>
+  <div class="highlight"></div>
+  <script>
+    const highlight = document.querySelector('.highlight');
+    const menutabs = document.querySelectorAll('.menutab');
+
+    const first = menutabs[1];
+    const { left } = first.getBoundingClientRect();
+    highlight.style.left = left + 'px';
+    highlight.style.top = first.offsetHeight + 5 + 'px';
+    highlight.style.width = first.offsetWidth + 'px';
+
+    menutabs.forEach(menutab => menutab.onclick = handleMenutabClick)
+    function handleMenutabClick(e) {
+      const { left } = e.target.getBoundingClientRect();
+      highlight.style.left = left + 'px';
+      highlight.style.top = e.target.offsetHeight + 5 + 'px';
+      highlight.style.width = e.target.offsetWidth + 'px';
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.querySelector('.container');
+    
+      const data = {
+        ['Point 1']: 'hello',
+        ['Point 2']: 'this is quite cool',
+        ['Group 1']: {
+          ['Point 3']: 'this is something different',
+          ['Group 2']: {
+            ['Point 4']: 'i dont want to mess with you bro',
+          }
+        },
+        ['Point 5']: 'this is a page tree',
+        ['Group 3']: {
+          ['Point 6']: 'that is expandable',
+        },
+      }
+
+
+      function render(data, root) {
+        for(let key of Object.keys(data)) {
+          if(key.split(' ')[0] === 'Point') {
+            const point = document.createElement('div');
+            point.textContent = data[key];
+            point.style.marginLeft = 20 + 'px';
+            root.appendChild(point);
+          } else {
+            const expandable = document.createElement('div');
+            expandable.textContent = 'group';
+            expandable.id = key;
+            expandable.style.marginLeft = 20 + 'px';
+            expandable.onclick = handleGroupClick;
+            root.appendChild(expandable);
+            render(data[key], expandable);
+          }
+        }
+      }
+      render(data, container);
+
+      function handleGroupClick(e) {
+        e.stopPropagation();
+        const children = Array.from(e.target.children);
+        children.forEach(child => child.classList.toggle('hidden'));
+      }
+
+    });
+  </script>
+</body>
+</html>

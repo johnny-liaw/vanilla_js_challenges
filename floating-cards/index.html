@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .card-container {
+            margin-top: 50px;
+            display: flex;
+        }
+
+        .card {
+            position: relative;
+            width: 200px;
+            height: 250px;
+            background-color: grey;
+            border: 1px solid black;
+            border-radius: 10px;
+            font-family: monospace;
+            transition: 1s ease-out;
+        }
+
+        .card-header {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .card:hover {
+            transform: translateY(-1rem);
+        }
+
+        .card:hover~.card {
+            transform: translateX(130px);
+        }
+
+        /* .card:not(:last-child) {
+            margin-right: -130px;
+        } */
+        .card:not(:first-child) {
+            margin-left: -130px;
+        }
+
+
+        .hexagon-container {
+            margin-top: 50px;
+        }
+
+        .hexagon {
+            width: 100px;
+            height: 40px;
+        }
+
+        .one {
+            transform: rotate(120deg);
+            overflow: hidden;
+        }
+
+        .two {
+            transform: rotate(-120deg);
+            overflow: hidden;
+        }
+
+        .three {
+            transform: rotate(-120deg);
+            overflow: hidden;
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <button>add</button>
+    <div class="card-container">
+        <div class="card">
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div>
+        <div class="card">
+            <div class="card-date">Spet 10th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div>
+        <!-- <div class="card">
+            <div class="card-date">Sept 11th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div>
+        <div class="card">
+            <div class="card-date">Sept 12th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div> -->
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.querySelector('button')
+            button.onclick = addCard
+
+            function addCard() {
+                const card = document.querySelector('.card');
+                const cardContainer = document.querySelector('.card-container');
+                const cloneCard = card.cloneNode(true);
+                console.log(cloneCard)
+                cardContainer.insertAdjacentElement('afterbegin', cloneCard)
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .container {
+    }
+  </style>
+</head>
+<body>
+  <div class="container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+      async function loadData() {
+        const promises = []
+        for(let i = 10; i < 200; i++) {
+          const prom = fetch(`https://hacker-news.firebaseio.com/v0/item/${i}.json?print=pretty`)
+          promises.push(prom)
+        }
+        Promise.all(promises).then(val => console.log(val))
+      }
+      loadData()
+      console.log('hi')
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+body {
+    margin: 0;
+    background-color: black;
+}
+
+.container {
+    padding: 20px 0;
+    margin: 0;
+    background-color: white;
+    margin-bottom: 50px;
+}
+
+.card {
+    margin: 20px 50px;
+    border: 1px solid black;
+    cursor: grab;
+}
+
+.beingDraggedClass {
+    background-color: grey;
+    cursor: grab;
+}

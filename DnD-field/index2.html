@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Autocomplete</title>
+    <!-- Included some basic styling, change at will -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/prampcontent/3ea04cbd0f61a798e96afbe5d31ec2f9/raw/e879e32222b543b29a168daa089e2f9f28cf9eb2/autocomplete.css">
+</head>
+<body>
+<form class="search-form">
+    <input type="text" class="search-input" placeholder="Start typing a movie title...">
+    <ul class="results"></ul>
+</form>
+<!-- Helper code to provide a search API for mock data -->
+<script src="https://cdn.rawgit.com/prampcontent/180077452f9279073cab1035f60d30cf/raw/9cbf891a80bad9ad09c6261ef9578a65502922cc/search_helper.js"></script>
+<script>
+    /*-------------------------------
+    *
+    * Write your JavaScript code here.
+    *
+    * The mocked search data is available using the searchData async method, e.g:
+    *   searchData("QUERY").then(results => ...)
+    * ------------------------------*/
+  document.addEventListener('DOMContentLoaded', () => {
+    let cachedResults = {}
+    const input = document.querySelector('.search-input')
+    const resultsContainer = document.querySelector('.results')
+    input.addEventListener('keydown', handleSearch)
+    
+    async function handleSearch() {
+      if(Object.keys(cachedResults).length < 1 || !cachedResults[input.value]) {
+        console.log('cache miss, reconducting search')
+        await makeSearch()
+        renderSearchResults()
+      } else {  
+        console.log('cache hit!')
+      }
+    }
+
+    function makeSearch() {
+      cachedResults = {}
+      searchData(input.value)
+        .then((res) => {
+          res.forEach(movie => {
+            cachedResults[movie.title] = movie.rating
+          })
+        })
+        .catch(error => console.log(error)) 
+    }
+    
+    function renderSearchResults() {
+      resultsContainer.innerHTML = ''
+      Object.keys(cachedResults).forEach((key) => {
+        const aMovie = document.createElement('li')
+        aMovie.textContent = `Title: ${key}, Rating: ${cachedResults[key]}`
+        resultsContainer.appendChild(aMovie)
+      })
+    }
+  })
+</script>
+</body>
+</html>

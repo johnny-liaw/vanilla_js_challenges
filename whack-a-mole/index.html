@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .mole-container {
+            display: flex;
+        }
+        .mole {
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+        }
+        .mole-appears {
+            background-color: brown;
+        }
+        .whacked {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="mole-container">
+        <div class="mole one"></div>
+        <div class="mole two"></div>
+        <div class="mole three"></div>
+    </div>
+    <div class="result"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const moles = document.querySelectorAll('.mole')
+            let moleCurrentPresent = null
+            let moleAppearInterval = window.setInterval(generateMole, 500)
+
+            moles.forEach(mole => mole.onclick = whackMole)
+
+            function whackMole(e) {
+                if(e.target.classList.contains('mole-appears')) {
+                    console.log('whacked!')
+                    moles[moleCurrentPresent].classList.add('whacked')
+                    window.setTimeout(clearMole, 100)
+                }
+            }
+
+            function generateMole() {
+                if(moleCurrentPresent === null) {
+                    const randomNum = Math.random() * 6 >> 0
+                    if(randomNum < 3) {
+                        if(randomNum === 0) console.log('0 set!')
+                        moles[randomNum].classList.add('mole-appears')
+                        moleCurrentPresent = randomNum
+                        const randomSecond = Math.random() * 10000 >> 0
+                        window.setTimeout(clearMole, 1000)
+                    }
+                }
+            }
+
+            function clearMole() {
+                if(moleCurrentPresent === null) {
+                    console.log('missed!')
+                } else {
+                    if(moles[moleCurrentPresent].classList.contains('whacked')) {
+                        moles[moleCurrentPresent].classList.remove('whacked')
+                    }
+                    moles[moleCurrentPresent].classList.remove('mole-appears')
+                    moleCurrentPresent = null
+                }
+            }
+        })
+    </script>
+</body>
+</html>

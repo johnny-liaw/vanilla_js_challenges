@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .timer {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <button id="addTimer">Add Timers</button>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const body = document.querySelector('body');
+      const button = document.querySelector('#addTimer');
+      const timers = []
+      
+      button.onclick = addTimer;
+
+      function addTimer() {
+        const timer = new Timer();
+      }
+
+      class Timer {
+        constructor() {
+          this.interval = null;
+          
+          const colon = document.createElement('div');
+          colon.textContent = ':';
+          this.minutes = document.createElement('div');
+          this.seconds = document.createElement('div');
+          this.minutes.textContent = 0;
+          this.seconds.textContent = 0;
+          const stopBtn = document.createElement('button');
+          const startBtn = document.createElement('button');
+          stopBtn.textContent = 'Stop';
+          startBtn.textContent = 'Start';
+          stopBtn.onclick = this.stopTimer;
+          startBtn.onclick = this.startTimer;
+
+          this.timer = document.createElement('div');
+          this.timer.classList.add('timer');
+          this.timer.appendChild(this.minutes);
+          this.timer.appendChild(colon);
+          this.timer.appendChild(this.seconds);
+          this.timer.appendChild(stopBtn);
+          this.timer.appendChild(startBtn);
+          body.appendChild(this.timer);
+        }
+
+        tick = () => {
+          let second = parseInt(this.seconds.textContent);
+          second += 1;
+          if(second == 60) {
+            let minute = parseInt(this.minutes.textContent);
+            minute += 1;
+            second = 0;
+            this.minutes.textContent = minute;
+          }
+          this.seconds.textContent = second;
+        }
+
+        stopTimer = () => {
+          window.clearInterval(this.interval);
+        }
+
+        startTimer = () => {
+          this.interval = window.setInterval(this.tick, 1000);
+        }
+      }
+
+    })
+  </script>
+</body>
+</html>

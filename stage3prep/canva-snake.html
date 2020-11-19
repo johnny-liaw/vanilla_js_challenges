@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .board {
+      width: 300px;
+      height: 300px;
+      border: 1px solid black;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .square {
+      width: 15px;
+      height: 15px;
+      box-sizing: border-box;
+      border: 1px solid grey;
+      background-color: lightblue;
+    }
+    .apple {
+      background-color: red;
+    }
+    .snake {
+      background-color: purple;
+    }
+  </style>
+</head>
+<body>
+  <div class="board"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const board = document.querySelector('.board');
+      const squares = []
+      const snake = {
+        pos: [0],
+        dir: 'E',
+      }
+
+      function generateBoard() {
+        for(let y = 0; y < 20; y++) {
+          for(let x = 0; x < 20; x++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.x = x;
+            square.y = y;
+            board.appendChild(square);
+            squares.push(square);
+          }
+        }
+      }
+      generateBoard()
+
+      function generateSnake() {
+        for(let pos of snake.pos) {
+          squares[pos].classList.add('snake');
+        }
+      }
+      generateSnake()
+
+      function generateApple() {
+        const randomNum = Math.random() * 399 >> 0
+        if(squares[randomNum].classList.contains('snake')) {
+          generateApple()
+        } else {
+          squares[randomNum].classList.add('apple');
+        }
+      }
+      generateApple()
+
+      window.onkeyup = handleUserInput;
+
+      function handleUserInput(e) {
+        if(e.key === 'ArrowRight') {
+          snake.dir = 'E';
+        } else if (e.key === 'ArrowUp') {
+          snake.dir = 'N';
+        } else if (e.key === 'ArrowLeft') {
+          snake.dir = 'W';
+        } else if (e.key == 'ArrowDown') {
+          snake.dir = 'S';
+        } else {
+          return;
+        }
+      }
+
+      let snakeMoveInterval = setInterval(moveSnake, 200);
+
+      function moveSnake() {
+        removeSnake();
+        const increment = getMoveIncrement(snake.dir);
+        let newHead = snake.pos[0];
+        if(!squares[newHead].classList.contains('apple')) {
+          snake.pos.pop();
+        } else {
+          squares[newHead].classList.remove('apple');
+          generateApple();
+        }
+        if(snake.dir === 'E' && squares[newHead].x === 19) newHead -= 19;
+        else if(snake.dir === 'W' && squares[newHead].x === 0) newHead += 19;
+        else if(snake.dir === 'S' && squares[newHead].y === 19) newHead -= 380;
+        else if(snake.dir === 'N' && squares[newHead].y === 0) newHead += 380;
+        else newHead += increment
+        snake.pos.unshift(newHead);
+        paintSnake();
+      }
+
+      function removeSnake() {
+        for(let pos of snake.pos) {
+          squares[pos].classList.remove('snake');
+        }
+      }
+
+      function paintSnake() {
+        for(let pos of snake.pos) {
+          squares[pos].classList.add('snake');
+        }
+      }
+
+      function getMoveIncrement(dir) {
+        if(dir === 'E') return 1;
+        if(dir === 'W') return -1;
+        if(dir === 'N') return -20;
+        if(dir === 'S') return 20;
+      }
+    })
+  </script>
+</body>
+</html>

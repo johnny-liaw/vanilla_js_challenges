@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100vw;
+      height: 200px;
+      border: 1px solid red;
+      display: flex;
+      margin: 50px;
+
+    }
+
+    .card {
+      width: 150px;
+      height: 100%;
+      background: #ccc;
+      border: 1px solid black;
+      margin-right: -50px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.5s linear;
+    }
+
+    .card:hover {
+      transform: translateY(-30px);
+      margin-right: 0;
+    }
+
+    .card:hover~.card {
+        /* transform: translateX(50px) */
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">card 1</div>
+    <div class="card">card 2</div>
+    <div class="card">card 3</div>
+    <div class="card">card 4</div>
+  </div>
+</body>
+</html>
+<script>
+  console.log('js loaded!')
+</script>

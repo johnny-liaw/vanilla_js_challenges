@@ -1,0 +1,23 @@
+body {
+}
+
+
+.grid-column {
+    background-color: grey;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.card {
+    background-color: red;
+    margin: 4px 3px;
+}
+.grid-container { 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 200px);
+    column-gap: 10px;
+    justify-content: center;
+    align-items: start;
+}

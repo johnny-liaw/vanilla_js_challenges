@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carousel</title>
+    <style>
+        .carousel-container {
+            width: 360px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 5px;
+            border: 1px solid black;
+            height: 100px;
+            align-items: center;
+            display: flex;
+            /* justify-content: center; */
+        }
+
+        .card {
+            width: 80px;
+            height: 80px;
+            border: 1px solid red;
+            flex-grow: 0;
+            flex-shrink: 0;
+            margin: 0 20px;
+            box-sizing: border-box;
+            transition: linear 0.1s;
+        }
+
+        button {
+            position: absolute;
+        }
+
+        .prev {
+            left: 0
+        }
+
+        .next {
+            right: 0
+        }
+
+        #first {
+            left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carousel-container">
+        <button class='prev'>Prev</button>
+        <div class="card" id='first'></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card"></div>
+        <div class="card" id='last'></div>
+        <button class='next'>Next</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            let currentPos = 1;
+            let numBoxes = 7;
+            let perSpace = 120;
+            const prev = document.querySelector('.prev');
+            const next = document.querySelector('.next');
+            const first = document.getElementById('first');
+
+            prev.onclick = function () {
+                if(currentPos !== 1) {
+                    if(first.style.marginLeft) {
+                        let currentMarginLeft = parseInt(first.style.marginLeft.split('px')[0]);
+                        let newMarginLeft = currentMarginLeft + perSpace;
+                        console.log(newMarginLeft)
+                        first.style.marginLeft = `${newMarginLeft}px`
+                        currentPos--;
+                    } else {
+                        first.style.marginLeft = '-120px'
+                        currentPos--;
+                    }
+                }
+
+            }
+
+            next.onclick = function () {
+                console.log(currentPos)
+                if (currentPos !== 5) {
+                    if (first.style.marginLeft) {
+                        let currentMarginLeft = parseInt(first.style.marginLeft.split('px')[0]);
+                        let newMarginLeft = currentMarginLeft - perSpace;
+                        console.log(newMarginLeft, currentMarginLeft);
+                        first.style.marginLeft = `${newMarginLeft}px`
+                        console.log(`-${newMarginLeft}px`)
+                        console.log(first.style.marginLeft)
+                        currentPos++
+                    } else {
+                        first.style.marginLeft = `-${100}px`
+                        currentPos++
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

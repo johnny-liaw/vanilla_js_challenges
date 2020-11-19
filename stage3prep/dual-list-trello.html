@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      display: flex;
+    }
+    .column {
+      margin-right: 50px;
+      border: 1px solid black;
+    }
+
+    .item {
+      width: 25px;
+      height: 25px;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <div class="column">
+    <h1>column 1</h1>
+    <div id="1" class="item">1</div>
+    <div id="2" class="item">2</div>
+    <div id="3" class="item">3</div>
+  </div>
+  <div class="column">
+    <h1>column 2</h1>
+    <div id="4" class="item">4</div>
+    <div id="5" class="item">5</div>
+    <div id="6" class="item">6</div>
+  </div>
+  <script>
+    let dragItem = null;
+    const items = document.querySelectorAll('.item');
+    items.forEach(item => {
+      item.draggable = true;
+      item.ondragstart = handleItemDragStart;
+      item.ondragenter = handleItemDragEnter;
+    });
+
+    function handleItemDragEnter(e) {
+      const pos = e.target.compareDocumentPosition(dragItem);
+      if(pos === 2) {
+        e.target.insertAdjacentElement('afterend', dragItem);
+      } else if (pos === 4) {
+        e.target.insertAdjacentElement('beforebegin', dragItem);
+      }
+    }
+
+    function handleItemDragStart(e) {
+      dragItem = e.target;
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+    }
+
+    function handleColumnDrop(e) {
+      console.log(e)
+    }
+  </script>
+</body>
+</html>

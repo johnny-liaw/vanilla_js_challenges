@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .item {
+      width: 200px;
+      height: 200px;
+      background-color: red;
+      position: absolute;
+      transform: translate(50px, 75px);
+    }
+
+    .point {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: black;
+    }
+
+    .nw {
+      position: absolute;
+      cursor: nw-resize;
+      left: -5px;
+      top: -5px;
+    }
+
+    .ne {
+      position: absolute;
+      cursor: ne-resize;
+      right: -5px;
+      top: -5px;
+    }
+
+    .sw {
+      position: absolute;
+      cursor: sw-resize;
+      left: -5px;
+      bottom: -5px;
+    }
+
+    .se {
+      position: absolute;
+      cursor: se-resize;
+      right: -5px;
+      bottom: -5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="item">
+    <div id='nw' class="point nw"></div>
+    <div id='ne' class="point ne"></div>
+    <div id='sw' class="point sw"></div>
+    <div id='se' class="point se"></div>
+  </div>
+  <script>
+    const item = document.querySelector('.item');
+    const points = document.querySelectorAll('.point');
+    const shift = {};
+    const mousePoint = {};
+    item.onmousedown = handleMouseDown;
+    let pointDown = false;
+    let pointId = null;
+
+    points.forEach(point => point.onmousedown = handlePointDown);
+
+    function handlePointDown(e) {
+      pointDown = true;
+      pointId = e.target.id;
+      mousePoint.x = e.clientX;
+      mousePoint.y = e.clientY;
+      window.onmousemove = handlePointMove;
+      window.onmouseup = handleMouseUp;
+    }
+
+    function handlePointMove(e) {
+      const { clientX, clientY } = e;
+      const { left, top } = item.getBoundingClientRect();
+      if (pointId === 'ne') {
+        const changeX = clientX - mousePoint.x;
+        const changeY = mousePoint.y - clientY;
+        const { offsetWidth, offsetHeight } = item;
+        item.style.width = offsetWidth + changeX + 'px';
+        item.style.height = offsetHeight + changeY + 'px';
+        item.style.transform = `translate(${left}px, ${top - changeY}px)`
+      } else if (pointId === 'nw') {
+        const changeX = mousePoint.x - clientX;
+        const changeY = mousePoint.y - clientY;
+        const { offsetWidth, offsetHeight } = item;
+        item.style.width = offsetWidth + changeX + 'px';
+        item.style.height = offsetHeight + changeY + 'px';
+        item.style.transform = `translate(${left-changeX}px, ${top-changeY}px`
+      } else if (pointId === 'se') {
+        const changeX = clientX - mousePoint.x;
+        const changeY = clientY - mousePoint.y;
+        const { offsetWidth, offsetHeight } = item;
+        item.style.width = offsetWidth + changeX + 'px';
+        item.style.height = offsetHeight + changeY + 'px';
+      } else {
+        const changeX = mousePoint.x - clientX;
+        const changeY = clientY - mousePoint.y;
+        const { offsetWidth, offsetHeight } = item;
+        item.style.width = offsetWidth + changeX + 'px';
+        item.style.height = offsetHeight + changeY + 'px';
+        item.style.transform = `translate(${left-changeX}px, ${top}px`
+      }
+      mousePoint.x = clientX;
+      mousePoint.y = clientY;
+    }
+
+
+    function handleMouseDown(e) {
+      if (!pointDown) {
+        const { clientX, clientY } = e;
+        const { left, top } = item.getBoundingClientRect();
+        const shiftX = clientX - left;
+        const shiftY = clientY - top;
+        shift.shiftX = shiftX;
+        shift.shiftY = shiftY;
+        window.onmousemove = handleMouseMove;
+        window.onmouseup = handleMouseUp;
+      }
+    }
+    function handleMouseMove(e) { const { clientX, clientY } = e; const { shiftX, shiftY } = shift; const newX = clientX - shiftX; const newY = clientY - shiftY; item.style.transform = `translate(${newX}px, ${newY}px)` }
+
+    function handleMouseUp(e) {
+      window.onmousemove = null;
+      window.onmouseup = null;
+      if (pointDown) pointDown = false;
+    }
+  </script>
+</body>
+
+</html>

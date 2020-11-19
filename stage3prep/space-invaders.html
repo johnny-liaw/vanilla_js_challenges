@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .board {
+      height: 400px;
+      width: 400px;
+      border: 1px solid black;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .square {
+      box-sizing: border-box;
+      height: 20px;
+      width: 20px;
+      background-color:lightblue;
+      border: 1px solid black;
+    }
+    .alien {
+      background-color: purple;
+    }
+    .hero {
+      background-color: red;
+    }
+    .lasers {
+      background-color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="board"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const board = document.querySelector('.board');
+      const squares = []
+      let alienPos = [1, 5, 2, 7, 15, 22, 36, 25, 27, 28, 31, 35, 37]
+      let laserInterval = null;
+      let lasers = []
+      let alienDir = 'left';
+      let heroPos = 370; 
+
+      function generateBoard() {
+        for(let y = 0; y < 20; y++) {
+          for(let x = 0; x < 20; x++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.pos = { x, y };
+            squares.push(square);
+            board.appendChild(square);
+          }
+        }
+      }
+      generateBoard();
+
+
+      function generateAliens() {
+        alienPos.forEach(pos => {
+          squares[pos].classList.add('alien')
+        });
+      }
+      generateAliens();
+
+      function generateHero() {
+        squares[heroPos].classList.add('hero')
+      }
+      generateHero();
+
+      let alienMoveInterval = window.setInterval(moveAliens, 1000);
+      window.addEventListener('keyup', handleUserInput);
+
+      function cleanBoardOfAliens() {
+        alienPos.forEach(pos => squares[pos].classList.remove('alien'))
+      }
+
+      function paintAliens() {
+        alienPos.forEach(pos => squares[pos].classList.add('alien'))
+      }
+
+      function dropAliens() {
+        cleanBoardOfAliens();
+        alienPos = alienPos.map(pos => pos += 20);
+        paintAliens();
+      }
+
+      function moveAliens() {
+        cleanBoardOfAliens();
+        for(let pos of alienPos) {
+          if((squares[pos].pos.x === 0 && alienDir === 'left') || 
+          (squares[pos].pos.x === 19) && alienDir === 'right') {
+            dropAliens();
+            alienDir = alienDir === 'right' ? 'left' : 'right';
+            return;
+          }
+        }
+        let decrement = alienDir === 'right' ? 1 : -1;
+        alienPos = alienPos.map(pos => pos += decrement);
+        paintAliens();
+      }
+
+      function moveHero(change) {
+        squares[heroPos].classList.remove('hero');
+        heroPos += change;
+        squares[heroPos].classList.add('hero');
+      }
+
+      function fireLaser() {
+        if(!laserInterval) {
+          laserInterval = window.setInterval(moveLasers, 50);
+        }
+        lasers.push(heroPos - 20);
+      }
+
+      function moveLasers() {
+        lasers.forEach(pos => squares[pos].classList.remove('lasers'))
+        lasers = lasers.map(pos => pos -= 20);
+        lasers = lasers.filter(pos => pos > 0)
+        lasers.forEach(pos => {
+          if(!squares[pos].classList.contains('alien')) {
+            squares[pos].classList.add('lasers');
+          } else {
+            squares[pos].classList.remove('alien');
+            alienPos.splice(alienPos.indexOf(pos), 1);
+          }
+        })
+      }
+
+      function handleUserInput(e) {
+        switch(e.key) {
+          case 'ArrowRight': 
+            moveHero(1)
+            break;
+          case 'ArrowLeft':
+            moveHero(-1)
+            break;
+          case 'ArrowUp':
+            moveHero(-20)
+            break;
+          case 'ArrowDown':
+            moveHero(+20)
+            break;
+          case ' ':
+            fireLaser();  
+            break;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    ul {
+      list-style-type: none;
+    }
+    .highlight {
+      background-color: orange;
+    }
+  </style>
+</head>
+<body>
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+    </ul>
+  </form>
+  <button>Show</button>
+  <script>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    let data;
+    const button = document.querySelector('button')
+    const ul = document.querySelector('ul');
+    button.onclick = function() {
+      console.log(data)
+    }
+    const searchBar = document.querySelector('.search');
+    searchBar.onkeyup = debounce(handleSearch, 2000);
+
+    function loadData() {
+      fetch(endpoint)
+      .then(resp => resp.json())
+      .then(body => {
+        data = body.map(({ 
+          latitude, 
+          growth_from_2000_to_2013, 
+          longitude, 
+          population,
+          rank,
+          ...keepAttrs 
+        }) => keepAttrs)
+      });
+    }
+    loadData();
+
+    function debounce(fn, delay) {
+      let timeoutId = null;
+      return (...args) => {
+        if(timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        setTimeout(() => fn(...args), delay);
+      }
+    }
+
+    function handleSearch(e) {
+      const searchData = data.filter(res => {
+        return res.city.toLowerCase().includes(e.target.value) || 
+          res.state.toLowerCase().includes(e.target.value)
+      })
+
+      ul.innerHTML = ''
+      searchData.forEach(searchResult => {
+        const li = document.createElement('li');
+        li.innerHTML += searchResult.city.replace(e.target.value, `<span class='highlight'>${e.target.value}</span>`)
+        li.innerHTML += `${searchResult.state}`;
+        ul.appendChild(li)
+      });
+    }
+  </script>
+</body>
+
+</html>

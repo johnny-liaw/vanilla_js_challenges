@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    .flex-container {
+      display: flex;
+      height: 100vh;
+      background-color: lightblue;
+    }
+    .image {
+      height: 100%;
+      width: 100px;
+      flex-grow: 1;
+      transition: width 0.2s ease-out;
+    }
+    .red {
+      background-color: red;
+    }
+    .purple {
+      background-color: purple;
+    }
+    .blue {
+      background-color: blue;
+    }
+    .green {
+      background-color: green;
+    }
+    .pink {
+      background-color: pink;
+    }
+    .big-width {
+      width: 300px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="flex-container">
+    <div class="image red"></div>
+    <div class="image purple"></div>
+    <div class="image blue"></div>
+    <div class="image green"></div>
+    <div class="image pink"></div>
+  </div>
+  <script>
+    const images = document.querySelectorAll('.image');
+    images.forEach(image => image.onclick = handleImageClick)
+
+    function handleImageClick(e) {
+      e.target.classList.toggle('big-width');
+    }
+  </script>
+</body>
+</html>

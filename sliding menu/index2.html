@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            height: 100vh;
+            position: relative;
+        }
+
+        .menu-container {
+            display: flex;
+            font-family: monospace;
+            font-size: 20px;
+        }
+
+        .item {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .marker {
+            position: absolute;
+            left: 0;
+            width: 0;
+            height: 5px;
+            background-color: orange;
+            transition: 0.3s ease-out;
+        }
+
+        .popup-container {
+            position: relative;
+            top: 50%;
+            font-family: monospace;
+        }
+
+        .popup-btn {
+            font-size: 40px;
+            box-sizing: border-box;
+            border: 1px solid black;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s ease-out;
+        }
+
+        .popup-show {
+            transform: rotate(765deg);
+        }
+
+        .popup-modal {
+            top: -120px;
+            left: 70px;
+            background-color: lightblue;
+            font-size: 17px;
+            position: absolute;
+            display: flex;
+            width: 150px;
+            opacity: 0;
+            justify-content: center;
+            height: 120px;
+            flex-direction: column;
+            border: 1px solid black;
+            transition: 0.1s ease-out;
+        }
+
+        .popup-modal-show {
+            opacity: 100%;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: center;
+            transition: 0.3s linear;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .span-drag-start {
+            background-color: grey;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="menu-container">
+        <div class="marker"></div>
+        <div class="item">Item 1</div>
+        <div class="item">Item 2</div>
+        <div class="item">Item 3</div>
+        <div class="item">Item 4</div>
+        <div class="item">Item 5</div>
+        <div class="item">Item 6</div>
+    </div>
+    <div class="popup-container">
+        <div class="popup-btn">+</div>
+        <div class="popup-modal">
+            <div class='list-item' draggable='true'>Facebook</div>
+            <div class='list-item' draggable='true'>Twitter</div>
+            <div class='list-item' draggable='true'>Twilio</div>
+            <div class='list-item' draggable='true'>Netflix</div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const marker = document.querySelector('.marker');
+            const items = document.querySelectorAll('.item');
+            const popupBtn = document.querySelector('.popup-btn');
+            const popupModal = document.querySelector('.popup-modal')
+            const draggables = document.querySelectorAll('.list-item');
+            let draggedItem = null
+
+            popupBtn.onclick = handlePopupClick
+            draggables.forEach(draggable => {
+                draggable.ondragstart = handleDragStart;
+                draggable.ondragend = handleDragEnd;
+                draggable.ondragenter = handleDragEnter;
+            })
+
+            function handleDragEnd(e) {
+                draggedItem = null
+                changeDragBackground(e);
+            }
+
+            function handleDragStart(e) {
+                draggedItem = e.target
+                changeDragBackground(e);
+            }
+
+            function changeDragBackground(e) {
+                setTimeout(e.target.classList.toggle('span-drag-start'), 0)
+            }
+
+            function handleDragEnter(e) {
+                const pos = draggedItem.compareDocumentPosition(e.target)
+                if (pos === 2) {
+                    // dragged ahead
+                    e.target.insertAdjacentElement('beforebegin', draggedItem)
+                } else if (pos === 4) {
+                    // dragged after
+                    e.target.insertAdjacentElement('afterend', draggedItem)
+                }
+            }
+
+            function showIndicator(e) {
+                marker.style.left = e.target.offsetLeft + 'px';
+                marker.style.width = e.target.offsetWidth + 'px';
+                marker.style.top = e.target.offsetTop + e.target.offsetHeight + 'px';
+            }
+
+            function handlePopupClick(e) {
+                e.target.classList.toggle('popup-show')
+                popupModal.classList.toggle('popup-modal-show')
+            }
+        })
+    </script>
+</body>
+
+</html>

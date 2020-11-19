@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .draggable-container {
+      border: 1px solid black;
+      display: flex;
+    }
+    .draggable {
+      width: 50px;
+      height: 50px;
+    }
+    .red {
+      background-color: red;
+    }
+    .blue {
+      background-color: blue;
+    }
+    .green {
+      background-color: green;
+    }
+    .dropContainer {
+      width: 500px;
+      height: 500px;
+      border: 1px solid black;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div class="draggable-container">
+    <div id="redSqr" class="draggable red"></div>
+    <div id="blueSqr" class="draggable blue"></div>
+    <div id="greenSqr" class="draggable green"></div>
+  </div>
+  <div class="dropContainer"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const draggables = document.querySelectorAll('.draggable');
+      const dropContainer = document.querySelector('.dropContainer');
+
+      draggables.forEach(draggable => {
+        draggable.draggable = true;
+        draggable.ondragstart = handleDragStart;
+      })
+
+      dropContainer.ondrop = handleDrop;
+      dropContainer.ondragover = handleDragOver;
+
+      function handleDragOver(e) {
+        e.preventDefault();
+      }
+
+        console.log("handleDrop -> clonedNode", clonedNode)
+        console.log("handleDrop -> clonedNode", clonedNode)
+        console.log("handleDrop -> clonedNode", clonedNode)
+      function handleDrop(e) {
+        const { clientX, clientY } = e;
+        const { left, top } = e.target.getBoundingClientRect();
+        const draggedItemId = e.dataTransfer.getData('draggedItem');
+        const { shiftX, shiftY } = JSON.parse(e.dataTransfer.getData('shift'));
+        const clonedNode = document.getElementById(draggedItemId).cloneNode();
+        clonedNode.style.position = 'absolute';
+        clonedNode.style.left = `${clientX - shiftX - left}px`;
+        clonedNode.style.top = `${clientY - shiftY - top}px`;
+        clonedNode.ondragstart = handleDragStart;
+        clonedNode.dropped = true;
+        e.target.appendChild(clonedNode)
+      }
+
+      function handleDragStart(e) {
+        e.dataTransfer.setData('draggedItem', e.target.id)
+        const { clientX, clientY } = e;
+        const { left, top } = e.target.getBoundingClientRect();
+        const shiftX = clientX - left;
+        const shiftY = clientY - top;
+        const shiftStringified = JSON.stringify({ shiftX, shiftY });
+        e.dataTransfer.setData('shift', shiftStringified);
+      }
+
+    })
+  </script>
+</body>
+</html>

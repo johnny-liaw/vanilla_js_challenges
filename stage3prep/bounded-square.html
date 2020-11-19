@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .container {
+      width: 250px;
+      height: 250px;
+      border: 1px solid black;
+      position: relative;
+      left: 50px;
+      top: 70px;
+    }
+    .draggable {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      background-color:red;
+    }
+  </style>
+</head>
+<div class="container">
+  <div class="draggable"></div>
+</div>
+<body>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const draggable = document.querySelector('.draggable');
+      const container = document.querySelector('.container');
+      let shift = {};
+      draggable.onmousedown = handleMouseDown;
+
+      function handleMouseDown(e) {
+        const { clientX, clientY } = e;
+        const { left, top } = e.target.getBoundingClientRect();
+        shift = { 
+          shiftX: clientX - left, 
+          shiftY: clientY - top
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+      }
+
+      function handleMouseMove(e) {
+        const { clientX, clientY } = e;
+        const { left, top } = container.getBoundingClientRect();
+        const { offsetWidth, offsetHeight } = container;
+        let newX = clientX - shift.shiftX - left;
+        let newY = clientY - shift.shiftY - top;
+        if(newX < 0) {
+          newX = 0;
+        }
+        if(newY < 0) {
+          newY = 0;
+        }
+        if(newX > offsetWidth - draggable.offsetWidth) {
+          newX = offsetWidth - draggable.offsetWidth; 
+        }
+        if(newY > offsetHeight - draggable.offsetHeight) {
+          newY = offsetHeight - draggable.offsetHeight; 
+        }
+        draggable.style.transform = `translate(${newX}px, ${newY}px)`
+      }
+
+      function handleMouseUp(e) {
+        window.removeEventListener('mousemove', handleMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    });
+  </script>
+</body>
+</html>

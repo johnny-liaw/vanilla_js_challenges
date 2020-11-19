@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .board {
+      display: flex;
+      flex-wrap: wrap;
+      width: 500px;
+      height: 500px;
+    }
+    .square {
+      width: 5px;
+      height: 5px;
+      box-sizing: border-box;
+      background-color: white;
+      border: 0.5px solid lightgrey;
+    }
+    .marked {
+      background-color: black;
+    }
+    .red {
+      background-color: red;
+    }
+    .blue {
+      background-color: blue;
+    }
+    .visited {
+      background-color: lightgreen;
+    }
+    .fastest-path {
+      background-color: orange;
+    }
+  </style>
+</head>
+<body>
+  <button id='findPathBtn'>Find Path</button>
+  <div class="board">
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      const findPathBtn = document.querySelector('#findPathBtn');
+      const board = document.querySelector('.board');
+      const boardData = []
+      const boardRef = []
+      let findPathQueue = [0]
+      let prev = Array(10000).fill(undefined);
+
+      class Path {
+        constructor() {
+          this.isMouseDown = false;
+          this.isContext = false;
+          for(let i = 0; i < 10000; i++) {
+            boardData.push(0);
+          }
+        }
+
+        renderBoard() {
+          for(let y = 0; y < 100; y++) {
+            for(let x = 0; x < 100; x++) {
+              const square = document.createElement('div');
+              square.pos = { x, y };
+              if(x === 0 && y === 0) {
+                square.classList.add('red');
+              }
+              if(x === 99 && y === 99) {
+                square.classList.add('blue');
+              }
+              square.classList.add('square');
+              square.onmousedown = this.handleMouseDown;
+              square.onmouseover = this.handleMouseOver;
+              square.oncontextmenu = this.handleContextMenu;
+              boardRef.push(square);
+              board.appendChild(square); 
+              }
+          }
+        }
+
+        handleContextMenu = (e) => {
+          e.preventDefault();
+          this.isContext = true;
+          window.addEventListener('mouseup', this.handleContextRelease);
+        }
+
+        handleContextRelease = (e) => {
+          this.isContext = false;
+        }
+
+        handleMouseDown = (e) => {
+          this.isMouseDown = true;
+          e.target.classList.add('marker')
+          window.addEventListener('mouseup', this.handleMouseUp);
+        }
+
+        handleMouseOver = (e) => {
+          if(this.isMouseDown && !this.isContext) {
+            e.target.classList.add('marked');
+            const { x, y } = e.target.pos;
+            const squareNum = x + y * 100;
+            boardData[squareNum] = 2;
+          } else if (this.isContext) {
+            e.target.classList.remove('marked');
+            boardData[parseInt(e.target.id)] = 0;
+          }
+        }
+
+        handleMouseUp = (e) => {
+          this.isMouseDown = false;
+        }
+
+        findPath = async () => {
+          // initialising first square so it is not revisited
+          boardData[0] = 1;
+          this.bfsHelper();
+          this.buildPath();
+        } 
+
+        buildPath = () => {
+          let trackedSquare = 9999;
+          while(trackedSquare !== 0) {
+            let prevSquare = prev[trackedSquare];
+            if(prevSquare !== 0) {
+              boardRef[prevSquare].classList.add('fastest-path');
+            }
+            trackedSquare = prevSquare;
+          }
+        }
+
+        bfsHelper = () => {
+          while(findPathQueue.length) {
+            const squareNumToInvestigate = findPathQueue.shift();
+            const newSquares = this.availableDirections(squareNumToInvestigate);
+            for(let square of newSquares) {
+              if(square === 9999) {
+                console.log('won');
+                prev[square] = squareNumToInvestigate;
+                return;
+              } else if (boardData[square] === 0) {
+                boardRef[square].classList.add('visited');
+                boardData[square] = 1;
+                findPathQueue.push(square);
+                prev[square] = squareNumToInvestigate;
+              }
+            }
+          }
+        }
+
+        availableDirections = (squareNum) => {
+          const directions = [];
+          const originSquare = boardRef[squareNum];
+          const { x, y } = originSquare.pos;
+          
+          // check if up direction is traversable
+          if(y > 0 && boardData[squareNum - 100] === 0) {
+            directions.push(x + y * 100 - 100);
+          }
+
+          // check if left direction is traversable
+          if(x > 0 && boardData[squareNum - 1] === 0) {
+            directions.push(x + y * 100 - 1);
+          }
+
+          // check if right direction is traversable
+          if(x < 99 && boardData[squareNum + 1] === 0) {
+            directions.push(squareNum + 1);
+          }
+
+          // check if bottom direction is traversable
+          if(y < 99 && boardData[squareNum + 100] === 0) {
+            directions.push(squareNum + 100);
+          }
+          return directions;
+        }
+      }
+
+      const path = new Path();
+      path.renderBoard();
+      findPathBtn.onclick = path.findPath
+    })
+  </script>
+</body>
+</html>

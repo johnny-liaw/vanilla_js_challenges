@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .maze {
+      display: flex;
+      flex-wrap: wrap;
+      height: 500px;
+      width: 500px;
+      border: 1px solid black;
+    }
+
+    .box {
+      border: 1px solid grey;
+      box-sizing: border-box;
+      height: 25px;
+      width: 25px;
+    }
+
+    .visited {
+      background-color: lightgreen;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="maze"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const maze = document.querySelector('.maze');
+      const boxes = [];
+      function generateMaze() {
+        for (let y = 0; y < 20; y++) {
+          for (let x = 0; x < 20; x++) {
+            const box = document.createElement('div');
+            box.classList.add('box');
+            box.id = y * 20 + x;
+            box.pos = { x, y };
+            maze.appendChild(box);
+            boxes.push(box);
+          }
+        }
+      }
+      generateMaze();
+
+      function getAvailableDirection(boxNum) {
+        const directions = [];
+        const { x, y } = boxes[boxNum].pos;
+        if(y > 0 && !boxes[boxNum - 20].classList.contains('visited')) directions.push(boxNum - 20);
+        if(y < 19 && !boxes[boxNum + 20].classList.contains('visited')) directions.push(boxNum + 20);
+        if(x > 0 && !boxes[boxNum - 1].classList.contains('visited')) directions.push(boxNum - 1);
+        if(x < 19 && !boxes[boxNum + 1].classList.contains('visited')) directions.push(boxNum + 1);
+        return directions;
+      }
+
+      function randomlySelectDirection(directions) {
+        const dirLen = directions.length;
+        const randomNum = Math.random() * (dirLen - 0.01) >> 0;
+        return randomNum;
+      }
+
+      function getDirectionLeftRightUpDown(from, to) {
+        if(to - from === 1) return 'Right';
+        if(to - from === -1) return 'Left';
+        if(to - from === 20) return 'Bottom';
+        if(to - from === -20) return 'Top';
+      }
+
+      function getCameFromDirection(dir) {
+        if(dir === 'Top') return 'Bottom';
+        if(dir === 'Left') return 'Right';
+        if(dir === 'Right') return 'Left';
+        if(dir === 'Bottom') return 'Top';
+      }
+
+      function DFS(boxNum, fromDir = 'Top') {
+        let directions = getAvailableDirection(boxNum);
+        boxes[boxNum].classList.add('visited');
+        boxes[boxNum].style[`border${getCameFromDirection(fromDir)}`] = 'none';
+        while(directions.length) {
+          const randomDirIdx = randomlySelectDirection(directions);
+          const dir = getDirectionLeftRightUpDown(boxNum, directions[randomDirIdx]);
+          boxes[boxNum].style[`border${dir}`] = 'none';
+          DFS(directions[randomDirIdx], dir);
+          directions = getAvailableDirection(boxNum);
+        }
+        return;
+      }
+
+      DFS(0);
+    })
+  </script>
+</body>
+
+</h

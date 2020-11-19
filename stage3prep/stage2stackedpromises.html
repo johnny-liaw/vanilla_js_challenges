@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const data = [1, 2, 3, 4, 5];
+
+    function fetchData() {
+      return new Promise((resolve, reject) => {
+        resolve(data);
+      })
+    }
+
+    // task 1: just running 10 concurrent promises
+    const promises = [];
+    for(let i = 0; i < 10; i++) {
+      promises.push(fetchData());
+    }
+    // Promise.all(promises).then((data) => console.log(data))
+
+    // task 2: JIT execution for 10 concurrent promises
+    function JITPromiseExecution() {
+      return new Promise((resolve, reject) => {
+        fetchData().then(data => resolve(findAverage(data)));
+      })
+    }
+
+    function findAverage(arr) {
+      let sum = 0;
+      for(let num of arr) {
+        sum += num;
+      }
+      return sum / arr.length;
+    }
+
+    const JITpromises = []
+    for(let i = 0; i < 10; i++) {
+      JITpromises.push(JITPromiseExecution());
+    }
+    Promise.all(JITpromises).then((data) => console.log(data))
+  </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .board {
+            margin-left: 35px;
+            margin-top: 75px;
+            display: flex;
+            flex-wrap: wrap;
+            height: 200px;
+            width: 200px;
+            background-color: white;
+        }
+
+        .pieces {
+            display: flex;
+        }
+
+        .blue-piece {
+            width: 20px;
+            height: 20px;
+            background-color: blue;
+        }
+
+        .orange-piece {
+            width: 20px;
+            height: 20px;
+            background-color: orange;
+        }
+
+        .purple-piece {
+            width: 20px;
+            height: 20px;
+            background-color: purple;
+        }
+
+        .red-piece {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+        }
+
+        .square {
+            height: 20px;
+            width: 20px;
+            border: 1px solid black;
+            box-sizing: border-box;
+        }
+
+        .dragenter-blue {
+            background-color: lightblue;
+        }
+
+        .pieces {
+            padding-top: 50px;
+        }
+
+        .two-two-piece {
+            display: flex;
+            flex-wrap: wrap;
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="root"></div>
+    <div class="pieces">
+        <div draggable='true' id='blue-piece' class="blue-piece"></div>
+        <div draggable='true' id='red-piece' class="red-piece"></div>
+        <div draggable='true' id='purple-piece' class="purple-piece"></div>
+        <div draggable='true' id='orange-piece' class="orange-piece"></div>
+        
+        <div draggable='true' class="two-two-piece">
+            <div id='red-piece' class="red-piece"></div>
+            <div id='red-piece' class="red-piece"></div>
+            <div id='red-piece' class="red-piece"></div>
+            <div id='red-piece' class="red-piece"></div> 
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = document.querySelector('.root')
+            let board;
+            const squares = []
+            const widthNum = 10
+            const heightNum = 10
+
+            function createBoard() {
+                board = document.createElement('div')
+                board.addEventListener('drop', handleDrop)
+                board.addEventListener('dragenter', handleDragEnter)
+                board.addEventListener('dragleave', handleDragLeave)
+                board.addEventListener('dragover', handleDragOver)
+                board.classList.add('board')
+                root.appendChild(board)
+                for (let i = 0; i < widthNum * heightNum; i++) {
+                    const square = document.createElement('div')
+                    square.id = i
+                    square.classList.add('square')
+                    squares.push(square)
+                    board.appendChild(square)
+                }
+            }
+            createBoard()
+
+            const pieces = document.querySelectorAll('.pieces > div')
+            pieces.forEach(piece => {
+                piece.addEventListener('dragstart', handleDragStart)
+                piece.addEventListener('dragend', handleDragEnd)
+            })
+
+            function handleDragStart(e) {
+                e.dataTransfer.setData('draggedItem', e.target.classList[0])
+                console.log('hanel drag start')
+            }
+            function handleDragEnd(e) {
+                console.log('handle drag end')
+                console.log(e.dataTransfer.getData('draggedItem'))
+                e.dataTransfer.setData('draggedItem', null)
+            }
+
+
+            function handleDrop(e) {
+                console.log('handle drop')
+                e.target.classList.toggle('dragenter-blue')
+                console.log(e.dataTransfer.getData('draggedItem'))
+                e.target.classList.add(e.dataTransfer.getData('draggedItem'))
+            }
+            function handleDragEnter(e) {
+                console.log('handle drag etner')
+                console.log(e.target)
+                e.target.classList.toggle('dragenter-blue')
+            }
+            function handleDragLeave(e) {
+                console.log('handle drag leave')
+                e.target.classList.toggle('dragenter-blue')
+            }
+            function handleDragOver(e) {
+                e.preventDefault()
+            }
+
+            // function attachEvent
+
+        })
+    </script>
+</body>
+
+</html>

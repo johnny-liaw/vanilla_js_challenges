@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .board {
+      height: 500px;
+      width: 500px;
+      display: flex;
+      flex-wrap: wrap;
+      border: 1px solid black;
+    }
+    .box {
+      box-sizing: border-box;
+      width: 25px;
+      height: 25px;
+      border: 1px solid black;
+    }
+    .visited {
+      background-color: lightgreen;
+    }
+    .obstacle {
+      background-color: black;
+    }
+    .entry {
+      background-color: red;
+    }
+    .exit {
+      background-color: blue;
+    }
+    .path {
+      background-color: purple;
+    }
+  </style>
+</head>
+<body>
+  <div class="board"></div>
+  <button>Find Path</button>
+  <script>
+    const board = document.querySelector('.board');
+    const findPathBtn = document.querySelector('button');
+    const prevPath = Array(400).fill(null);
+    const boxes = [];
+    let isMouseDown = false;
+
+    findPathBtn.onclick = findPath;
+
+    function findPath() {
+      let queue = [];
+      queue.push(boxes[0]);
+      boxes[0].visited = true;
+      while(queue.length) {
+        const box = queue.shift();
+        if(box.id === '399') {
+          retracePath();
+          return;
+        }
+        const directions = findAvailableDirections(parseInt(box.id));
+        directions.forEach(dir => {
+          prevPath[dir] = parseInt(box.id);
+          boxes[dir].visited = true;
+          boxes[dir].classList.add('visited');
+          queue.push(boxes[dir]);
+        })
+      }
+    }
+
+    function retracePath() {
+      let id = 399;
+      while(id !== 0) {
+        id = prevPath[id];
+        if(id !== 0) boxes[id].classList.add('path');
+      }
+    }
+
+    function findAvailableDirections(boxNum) {
+      const { x, y } = boxes[boxNum].pos;
+      const directions = [];
+      if(x > 0 && !boxes[boxNum-1].visited && !isObstacle(boxNum)) directions.push(boxNum - 1);
+      if(x < 19 && !boxes[boxNum+1].visited && !isObstacle(boxNum)) directions.push(boxNum + 1);
+      if(y > 0 && !boxes[boxNum-20].visited && !isObstacle(boxNum)) directions.push(boxNum - 20);
+      if(y < 19 && !boxes[boxNum+20].visited && !isObstacle(boxNum)) directions.push(boxNum + 20);
+      return directions;
+    }
+
+    function isObstacle(boxNum) {
+      return boxes[boxNum].classList.contains('obstacle');
+    }
+
+    function generateGrid() {
+      for(let y = 0; y < 20; y++) {
+        for(let x = 0; x < 20; x++) {
+          const box = document.createElement('div');
+          box.id = y * 20 + x;
+          box.pos = { x, y };
+          box.classList.add('box');
+          box.onmousedown = handleMouseDown;
+          boxes.push(box);
+          board.appendChild(box);
+        }
+      }
+      boxes[0].classList.add('entry');
+      boxes[399].classList.add('exit');
+    }
+    generateGrid()
+
+    function handleMouseDown(e) {
+      e.target.classList.add('obstacle');
+      isMouseDown = true;
+      window.onmouseover = handleMouseOver
+      window.onmouseup = handleMouseUp
+    }
+
+    function handleMouseOver(e) {
+      if(e.target.classList.contains('box')) {
+        e.target.classList.add('obstacle');
+      }
+    }
+
+    function handleMouseUp(e) {
+      window.onmouseover = null;
+    }
+  </script>
+</body>
+</html>

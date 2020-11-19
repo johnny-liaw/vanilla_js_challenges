@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .card-container {
+            margin-top: 50px;
+            display: flex;
+        }
+
+        .card {
+            position: relative;
+            width: 200px;
+            height: 250px;
+            background-color: grey;
+            border: 1px solid black;
+            border-radius: 10px;
+            font-family: monospace;
+            transition: 1s ease-out;
+        }
+
+        .card-header {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .card:hover {
+            transform: translateY(-1rem);
+        }
+
+        .card:hover~.card {
+            transform: translateX(130px);
+        }
+
+        .card:not(:first-child) {
+            margin-left: -130px;
+        }
+
+        .hexagon-container {
+            margin-top: 50px;
+        }
+
+        .hexagon {
+            width: 100px;
+            height: 40px;
+        }
+
+        .one {
+            transform: rotate(120deg);
+            border: 1px solid blue;
+            /* overflow: hidden; */
+        }
+
+        .two {
+            transform: rotate(-120deg);
+            border: 1px solid green;
+            /* overflow: hidden; */
+        }
+
+        .three {
+            transform: rotate(-120deg);
+            border: 1px solid red;
+            /* background-color: red; */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card-container">
+        <div class="card">
+            <div class="card-date">Sept 9th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div>
+        <div class="card">
+            <div class="card-date">Spet 10th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div>
+        <div class="card">
+            <div class="card-date">Sept 11th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+        </div>
+        <div class="card">
+            <div class="card-date">Sept 12th 2020</div>
+            <div class="card-header">Card tricks are fun! All with CSS.</div>
+            <div class='hexagon-container'>
+                <div class="hexagon one">
+                    <div class="hexagon two">
+                        <div class="hexagon three"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='hexagon-container'>
+        <div class="hexagon one">
+            <div class="hexagon two">
+                <div class="hexagon three"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

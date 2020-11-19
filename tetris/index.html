@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .square {
+            height: 20px;
+            width: 20px;
+            box-sizing: border-box;
+            background-color: lightblue;
+            border: 1px solid black;
+        }
+
+        .board {
+            height: 400px;
+            width: 200px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .z {
+            background-color: purple;
+        }
+        .o {
+            background-color: red;
+        }
+        .l {
+            background-color: blue;
+        }
+        .j {
+            background-color: yellow;
+        }
+        .s {
+            background-color: green;
+        }
+        .t {
+            background-color: teal;
+        }
+        .setTetris {
+            background-color: grey;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="board"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const board = document.querySelector('.board')
+            const squares = []
+            const HEIGHT = 20
+            const WIDTH = 10
+            let origin = 3;
+            let tetriminoPos = null
+            let currentTetrimino = null
+            let currentTetriminoOrientation = null
+            let interval = null
+            function createBoard() {
+                for (let i = 0; i < HEIGHT * WIDTH; i++) {
+                    const square = document.createElement('div')
+                    square.classList.add('square')
+                    board.appendChild(square)
+                    squares.push(square)
+
+                }
+            }
+            createBoard()
+
+            const tetriminos = {
+                z: [
+                    [0, 1, WIDTH + 1, WIDTH + 2],
+                    [0, WIDTH, WIDTH - 1, 2 * WIDTH - 1],
+                ],
+                s: [
+                    [0, 1, WIDTH, WIDTH - 1],
+                    [0, WIDTH, WIDTH + 1, 2 * WIDTH + 1],
+                ],
+                t: [
+                    [0, WIDTH, WIDTH - 1, WIDTH + 1],
+                    [0, -1, -WIDTH, WIDTH],
+                    [0, -1, 1, WIDTH],
+                    [0, 1, -WIDTH, WIDTH],
+                ],
+                o: [
+                    [0, WIDTH, 0 + 1, WIDTH + 1]
+                ]
+            }
+
+            const tetriminos2 = {
+                z: [
+                    [1, 1, 0],
+                    [0, 1, 1]
+                ],
+                t: [
+                    [1, 1, 1],
+                    [0, 1, 0],
+                ],
+                s: [
+                    [0, 1, 1],
+                    [1, 1, 0]
+                ],
+                i: [1, 1, 1, 1],
+                l: [
+                    [0, 0, 1],
+                    [1, 1, 1],
+                ],
+                j: [
+                    [1, 0, 0],
+                    [1, 1, 1],
+                ],
+                o: [
+                    [1, 1],
+                    [1, 1]
+                ]
+            }
+            const tetriminoList = ['z', 's', 't', 'l', 'j', 'o']
+            function addTetriminoToBoard(tetrimino) {
+                const shape = tetriminos[tetrimino][0]
+                const tempTetriminoPos = shape.map(pos => origin + pos)
+                for(let squareNum of tempTetriminoPos) {
+                    squares[squareNum].classList.add(tetrimino)
+                }
+                currentTetriminoOrientation = 0
+                currentTetrimino = tetrimino
+                tetriminoPos = tempTetriminoPos
+            }
+
+            function tick() {
+                if(currentTetrimino) lowerTetrimino()
+                else {
+                    const randomIdx = Math.random() * 5.99 >> 0
+                    const newTetrimino = tetriminoList[randomIdx]
+                    addTetriminoToBoard(newTetrimino)
+                }
+            }
+
+            function lowerTetrimino() {
+                let setTetrisFlag = false
+                // undraw tetris
+                for(let pos of tetriminoPos) {
+                    squares[pos].classList.remove(currentTetrimino);
+                }
+                tetriminoPos = tetriminoPos.map(pos => pos + 10);
+                // draw tetris
+                for(let pos of tetriminoPos) {
+                    if(pos + 10 > 199 || squares[pos+10].classList.contains('setTetris')) {
+                        setTetrisFlag = true
+                        break
+                    } else {
+                        squares[pos].classList.add(currentTetrimino);
+                    }
+                }
+
+                if(setTetrisFlag) {
+                    tetriminoPos.forEach(pos => {
+                        squares[pos].classList.add('setTetris')
+                    })
+                    tetriminoPos.length = 0
+                    currentTetrimino = null
+                }
+            }
+
+            function dropTetriminoLowest() {
+                while(currentTetrimino) {
+                    lowerTetrimino()
+                }
+            }
+
+            function translateTetrimino(dir) {
+                if(dir === 'R') {
+                    const onRightEdge = tetriminoPos.some(pos => pos % 10 === 9)
+                    if(!onRightEdge) {
+                        tetriminoPos.forEach(pos => squares[pos].classList.remove(currentTetrimino))
+                        tetriminoPos = tetriminoPos.map(pos => pos + 1)
+                        tetriminoPos.forEach(pos => squares[pos].classList.add(currentTetrimino))
+                    }
+                } else {
+                    const onLeftEdge = tetriminoPos.some(pos => pos % 10 === 0)
+                    if(!onLeftEdge) {
+                        tetriminoPos.forEach(pos => squares[pos].classList.remove(currentTetrimino))
+                        tetriminoPos = tetriminoPos.map(pos => pos - 1)
+                        tetriminoPos.forEach(pos => squares[pos].classList.add(currentTetrimino))
+                    }
+                }
+            }
+
+            function rotateTetris() {
+                // rotate tetrmino orientation
+                if(currentTetriminoOrientation < tetriminos[currentTetrimino].length - 1) {
+                    currentTetriminoOrientation += 1
+                } else {
+                    currentTetriminoOrientation = 0
+                }
+
+                tetriminoPos.forEach(pos => squares[pos].classList.remove(currentTetrimino))
+                const currentTetriminoOrigin = tetriminoPos[0]
+                tetriminoPos = tetriminos[currentTetrimino][currentTetriminoOrientation].map(pos => pos + currentTetriminoOrigin)
+                tetriminoPos.forEach(pos => squares[pos].classList.add(currentTetrimino))
+            }
+
+            function handleUserInput(e) {
+                if(e.code === 'Space') {
+                    dropTetriminoLowest()
+                } else if (e.code === 'ArrowRight') {
+                    translateTetrimino('R')
+                } else if (e.code === 'ArrowLeft') {
+                    translateTetrimino('L')
+                } else if (e.code === 'ArrowUp') {
+                    rotateTetris()
+                }
+            }
+
+            addTetriminoToBoard('t')
+            window.addEventListener('keyup', handleUserInput)
+            interval = window.setInterval(tick, 500)
+        })
+
+    </script>
+</body>
+
+</html>

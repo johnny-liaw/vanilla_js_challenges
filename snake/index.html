@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .square {
+            width: 20px;
+            height: 20px;
+            background-color: lightblue;
+        }
+
+        .snakeBody {
+            background-color: purple;
+        }
+
+        .apple {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container')
+            const snake = {
+                body: [3, 4, 5, 6, 7, 8],
+                direction: 'W',
+            }
+            const squareRef = []
+
+            function createBoard() {
+                for (let i = 0; i < 100; i++) {
+                    const square = document.createElement('div')
+                    square.classList.add('square')
+                    square['id'] = i
+                    container.appendChild(square)
+                    squareRef.push(square)
+                }
+            }
+
+            function generateApple() {
+                const sqrNum = (Math.random() * 99 + 1) >> 0
+                if (squareRef[sqrNum].classList.contains('snakebody')) {
+                    generateApple()
+                } else {
+                    squareRef[sqrNum].classList.add('apple')
+                }
+            }
+
+            function generateSnake() {
+                // for now put snake in the same square on respawn
+                for (let sqrNum of snake.body) {
+                    squareRef[sqrNum].classList.add('snakeBody')
+                }
+            }
+
+            function moveSnake() {
+                snake.body.forEach(sqrNum => squareRef[sqrNum].classList.remove('snakeBody'))
+                let newHead = snake.body[0];
+                if (snake.direction === 'E') {
+                    if (newHead % 10 === 9) {
+                        newHead -= 9
+                    } else {
+                        newHead += 1
+                    }
+                }
+                if (snake.direction === 'W') {
+                    if (newHead % 10 === 0) {
+                        newHead += 9
+                    } else {
+                        newHead -= 1
+                    }
+                }
+                if (snake.direction === 'S') {
+                    if (newHead > 89) {
+                        newHead -= 90
+                    } else {
+                        newHead += 10
+                    }
+                }
+                if (snake.direction === 'N') {
+                    if (newHead < 10) {
+                        newHead += 90
+                    } else {
+                        newHead -= 10
+                    }
+                }
+                if (squareRef[newHead].classList.contains('apple')) {
+                    squareRef[newHead].classList.remove('apple')
+                    snake.body.unshift(newHead)
+                    generateApple()
+                    moveSnake()
+                } else if (snake.body.includes(newHead)) {
+                     console.log('game over')
+                     window.clearInterval(intervalId)
+                } else {
+                    snake.body = [newHead].concat(snake.body.slice(0, snake.body.length - 1))
+                    snake.body.forEach(sqrNum => squareRef[sqrNum].classList.add('snakeBody'))
+                }
+            }
+
+            function tick() {
+                moveSnake()
+            }
+
+            function handleUserInput(e) {
+                if (e.keyCode === 37) snake.direction = 'W'
+                if (e.keyCode === 39) snake.direction = 'E'
+                if (e.keyCode === 38) snake.direction = 'N'
+                if (e.keyCode === 40) snake.direction = 'S'
+            }
+
+            createBoard()
+            generateSnake()
+            generateApple()
+            window.addEventListener('keydown', handleUserInput)
+            const intervalId = window.setInterval(tick, 500)
+        })
+    </script>
+</body>
+
+</html>

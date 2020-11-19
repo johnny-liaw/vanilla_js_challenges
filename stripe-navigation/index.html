@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      font-family: sans-serif;
+
+    }
+    .header {
+      display: flex;
+      margin-left: 50px;
+    }
+    .nav {
+      margin-right: 30px;
+    }
+    .popover {
+      width: 100px;
+      height: 100px;
+      opacity: 0;
+      border: 1px solid black;
+      transition: opacity 0.5s ease-out,
+        transform 0.1s ease-out;
+    }
+    .popover-show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div id="first" class="nav">first</div>
+    <div id="second" class="nav">seconds</div>
+  </div>
+  <div class="popover">
+    <div class="firstPop"></div>
+    <div class="secondPop"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const first = document.getElementById('first');
+      const second = document.getElementById('second');
+      const navs = document.querySelectorAll('.nav');
+      const header = document.querySelector('.header');
+      const popover = document.querySelector('.popover');
+
+      navs.forEach(nav => nav.onmouseover = handleMouseOver)
+      header.onmouseleave = handleMouseLeave;
+
+      function handleMouseOver(e) {
+        if(!popover.classList.contains('.popover-show')) {
+          popover.classList.add('popover-show');
+          const { left } = e.target.getBoundingClientRect();
+          popover.style.transform = `translateX(${left}px)`
+        }
+      }
+      
+      function handleMouseLeave(e) {
+        console.log('hi')
+        popover.classList.remove('popover-show')
+      }
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tictactoe</title>
+    <style>
+        /* style sectoin */
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            width: 300px;
+            height: 300px;
+        }
+
+        .square {
+            box-sizing: border-box;
+            width: 100px;
+            height: 100px;
+            border: 1px solid black;
+        }
+        .flex {
+            display: flex;
+        }
+        .history {
+            display: flex;
+            flex-direction: column;
+        }
+        .delete-history {
+            border: 1px solid black;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- html section -->
+    <div class="flex">
+        <div class="board"></div>
+        <div class="history"></div>
+        <div class="delete-history">Delete</div>
+    </div>
+    <div class="winner-result"></div>
+</body>
+
+</html>
+
+<script>
+    // ⭕ ❌
+    const board = document.querySelector('.board');
+    const winnerResult = document.querySelector('.winner-result');
+    const history = document.querySelector('.history')
+    const deleteBtn = document.querySelector('.delete-history')
+
+    class Tictactoe {
+        constructor() {
+            deleteBtn.onclick = this.handleDelete
+            this.history = []
+            this.currentSymbol = 0;
+            this.symbols = ['⭕', '❌']
+
+            this.boardData = [
+                [2, 2, 2],
+                [2, 2, 2],
+                [2, 2, 2]
+            ];
+
+            // 2 = empty
+            // 0 = circle
+            // 1 = cross
+        }
+
+        handleDelete = e => {
+            const squares = document.querySelectorAll('.square')
+            if(this.history.length) {
+
+                const { x, y } = this.history.pop()
+                this.boardData[y][x] = 2
+                squares.forEach(square => {
+                    const { x:xPos, y:yPos } = square.pos
+                    console.log(xPos, yPos)
+                    if(x === xPos && y === yPos) {
+                        console.log('entered')
+                        square.textContent = ''
+                    }
+                })
+                history.removeChild(history.children[history.children.length-1])
+            } else {
+                console.log('history empty!')
+            }
+        }
+
+        drawBoard() {
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 3; x++) {
+                    const square = document.createElement('div');
+                    square.pos = { x, y }
+                    square.classList.add('square')
+                    square.onclick = this.handleOnClick
+                    board.appendChild(square);
+                }
+            }
+        }
+
+        handleOnClick = (e) => {
+            e.target.textContent = this.symbols[this.currentSymbol]
+            const { x, y } = e.target.pos;
+            this.history.push({ x, y })
+
+            const historySpan = document.createElement('span');
+            historySpan.textContent = `x: ${x}, y: ${y}, placed: ${this.symbols[this.currentSymbol]}`
+            history.appendChild(historySpan)
+
+            this.boardData[y][x] = this.currentSymbol
+            this.checkWinner(e)
+            if (this.currentSymbol) {
+                this.currentSymbol = 0
+            } else {
+                this.currentSymbol = 1
+            }
+        }
+
+        checkWinner = (e) => {
+            // check horizontals
+            for (let y = 0; y < 3; y++) {
+                const isWinnerCircle = this.boardData[y].every(mark => mark == 0)
+                const isWinnerCross = this.boardData[y].every(mark => mark == 1)
+                if (isWinnerCircle || isWinnerCross) {
+                    this.declareWinner()
+                }
+            }
+
+            // vertical checks
+            for (let x = 0; x < 3; x++) {
+                let markings = []
+                for (let y = 0; y < 3; y++) {
+                    markings.push(this.boardData[y][x])
+                }
+                const isWinnerCircle = markings.every(mark => mark == 0)
+                const isWinnerCross = markings.every(mark => mark == 1)
+                if (isWinnerCircle || isWinnerCross) {
+                    this.declareWinner()
+                }
+            }
+
+            // diaganol checks
+            const x = [0, 1, 2]
+            const y = [0, 1, 2]
+
+            const xRev = [0, 1, 2]
+            const yRev = [2, 1, 0]
+
+            const southEastValues = []
+            for (let i = 0; i < 3; i++) {
+                southEastValues.push(this.boardData[y[i]][x[i]])
+            }
+            const isWinnerCircle = southEastValues.every(mark => mark == 0)
+            const isWinnerCross = southEastValues.every(mark => mark == 1)
+            if (isWinnerCircle || isWinnerCross) {
+                this.declareWinner()
+            }
+
+            const northEastValues = []
+            for (let i = 0; i < 3; i++) {
+                northEastValues.push(this.boardData[yRev[i]][xRev[i]])
+            }
+            console.log(northEastValues)
+            const isWinnerCircleNorthEast = northEastValues.every(mark => mark == 0)
+            const isWinnerCrossNorthEast = northEastValues.every(mark => mark == 1)
+            if (isWinnerCircleNorthEast || isWinnerCrossNorthEast) {
+                this.declareWinner()
+            }
+
+
+        }
+
+        declareWinner = () => {
+            winnerResult.textContent = `${this.symbols[this.currentSymbol]} is the winner!`
+            console.log(this.boardData)
+        }
+
+        render() {
+            console.log('tictactoe render');
+            this.drawBoard()
+        }
+    }
+
+    const ticTacToe = new Tictactoe();
+    ticTacToe.render();
+</script>

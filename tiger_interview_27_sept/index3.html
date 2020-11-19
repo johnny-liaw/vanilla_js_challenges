@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .draggable-container {}
+
+    .square {
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
+      border: 1px solid black;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .drop-container {
+      position: relative;
+      background: lightgrey;
+      width: 500px;
+      height: 500px;
+      border: 1px solid black;
+      display: flex;
+    }
+    .overall {
+      display: flex;
+    }
+    .dropped-square {
+      position: absolute;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overall">
+    <div class="draggable-container">
+      <div id="redSquare" class="square red" draggable='true'></div>
+      <div id="blueSquare" class="square blue" draggable='true'></div>
+      <div id="greenSquare" class="square green" draggable='true'></div>
+    </div>
+    <div class="drop-container"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const dropContainer = document.querySelector('.drop-container');
+      const dragContainer = document.querySelector('.draggable-container');
+      const draggables = document.querySelectorAll('.square');
+
+      draggables.forEach(draggable => {
+        draggable.ondragstart = handleDragStart;
+        draggable.ondragend = handleDragEnd;
+      })
+
+      dropContainer.ondrop = handleDrop;
+      dropContainer.ondragover = handleDragOver;
+
+      function handleDragStart(e) {
+        console.log('start')
+        const { clientX, clientY } = e;
+        const { left, top } = e.target.getBoundingClientRect();
+        const [shiftX, shiftY] = [clientX - left, clientY - top];
+        const object = {
+          id: e.target.id,
+          shiftX,
+          shiftY,
+          fromDrawer: !e.target.dropped,
+        }; 
+        e.dataTransfer.setData('dragged', JSON.stringify(object));
+      }
+      
+      function handleDragEnd(e) {
+        e.dataTransfer.setData('dragged', null)
+      }
+
+      function handleDrop(e) {
+        const { clientX, clientY } = e;
+        const { left, top } = e.target.getBoundingClientRect();
+        const { id, shiftX, shiftY, fromDrawer } = JSON.parse(e.dataTransfer.getData('dragged'));
+        let holdItem = null;
+        let shift = {}
+        let draggedItem = document.getElementById(id);
+        if(fromDrawer) {
+          const squareNum = document.querySelectorAll('.dropped-square')
+          draggedItem = draggedItem.cloneNode();
+          draggedItem.id = `${squareNum.length}-Dropped`
+          draggedItem.classList.add('dropped-square');
+          draggedItem.draggable = false;
+          draggedItem.dropped = true;
+          draggedItem.onmousedown = handleMouseDown;
+        }
+        draggedItem.style.left = clientX - left - shiftX + 'px';
+        draggedItem.style.top = clientY - top - shiftY + 'px'; 
+        console.log(draggedItem)
+        e.target.appendChild(draggedItem)
+      }
+
+      function handleMouseDown(e) {
+        const { top, left } = e.target.getBoundingClientRect();
+        holdItem = e.target;
+        shift = {
+          x: e.clientX - left, 
+          y: e.clientY - top,
+        }
+        window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('mouseup', handleMouseUp)
+      }
+
+      function handleMouseUp(e) {
+        holdItem = null;
+        shift = {}
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      }
+
+      function handleMouseMove(e) {
+        console.log(e)
+        const { clientX, clientY } = e;
+        const { top, left } = dropContainer.getBoundingClientRect();
+        holdItem.style.left = clientX - left - shift.x + 'px';
+        holdItem.style.top = clientY - top - shift.y + 'px';
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+      }
+    })
+  </script>
+</body>
+
+</html>

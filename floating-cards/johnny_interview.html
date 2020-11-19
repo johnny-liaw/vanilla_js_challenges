@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake</title>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    #board {  
+      border: 3px solid;  
+      position: absolute;  
+      font-size: 24px;  
+      line-height: 1.5ex;  
+      margin: 0;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+  <pre id="board"></pre>
+</body>
+</html>
+<script>
+  console.log('JS loaded successfully!')
+
+  const boardWidth = 18;
+  const boardHeight = 12;
+  let appleX = null;
+  let appleY = null;
+  const board = document.getElementById('board');
+
+  const snake = {
+    bodyX: [],
+    bodyY: [],
+    x: boardWidth / 2,
+    y: boardHeight / 2,
+    direction: { x: 1, y: 0 },
+    length: 0
+  };
+
+  function renderBoard() {
+    let newBoard = '';
+    for (let y = 0; y < boardHeight; y++) {
+      for (let x = 0; x < boardWidth; x++) {
+        if ((snake.x === x && snake.y ===y) || (snake.bodyX.includes(x) && snake.bodyY.includes(y))){
+          newBoard += '*';
+        // } else if (snake.bodyX.includes(x) && (snake.bodyX.indexOf(x) === snake.bodyY.indexOf(y))) {
+        //   newBoard += '*'
+        } else if (appleX === x && appleY === y) {
+          newBoard += 'A'
+        } else {
+          newBoard += ' ';
+        }
+      }
+      newBoard += '\n';
+    }
+    board.textContent = newBoard;
+  }
+
+  function generateApplePosition() {
+    appleY = Math.random() * (boardHeight-1) >> 0
+    appleX = Math.random() * (boardWidth-1) >> 0
+    while(snake.x === appleX && snake.Y === appleY) {
+      appleY = Math.random() * (boardHeight-1) >> 0
+      appleX = Math.random() * (boardWidth-1) >> 0
+    }
+  }
+
+  generateApplePosition();
+  renderBoard();
+  setInterval(() => {
+    if(snake.bodyX.length) {
+      snake.bodyX.pop() // renmove last body position
+      snake.bodyX.unshift(snake.x)
+      snake.bodyY.pop() // renmove last body position
+      snake.bodyY.unshift(snake.y)
+      // console.log('new turn')
+      console.log(snake.bodyX) 
+      console.log(snake.bodyY)
+    }
+    snake.x += snake.direction.x;
+    snake.y += snake.direction.y;
+    if (snake.x > 17) {
+      snake.x -= 18;
+    }
+
+    if (snake.y > 11) {
+      snake.y -= 12;
+    }
+
+    if(snake.x < 0) {
+      snake.x += 18;
+    }
+
+    if(snake.y < 0) {
+      snake.y += 12
+    }
+
+    if(snake.x === appleX && snake.y === appleY) {
+      snake.bodyX.unshift(appleX -= snake.direction.x);
+      snake.bodyY.unshift(appleY -= snake.direction.y);
+      console.log(snake.bodyX)
+      // console.log(snake.bodyY)
+      generateApplePosition();
+    }
+
+
+
+    renderBoard();
+  },  400);
+
+  const keyToDirection = {
+    'ArrowUp': { x: 0, y: -1 },
+    'ArrowRight': { x: 1, y: 0 },
+    'ArrowDown': { x: 0, y: 1 },
+    'ArrowLeft': { x: -1, y: 0 },
+  };
+
+  document.addEventListener('keydown', e => {
+    if (keyToDirection[e.key]) {
+      snake.direction = keyToDirection[e.key];
+    }
+  });
+
+</script>

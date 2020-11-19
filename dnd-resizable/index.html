@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .draggable {
+      position: absolute;
+      background-color: red;
+      width: 100px;
+      height: 100px;
+    }
+
+    .corner {
+      z-index: 2;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 1px solid lightblue;
+      background-color: green;
+      border-radius: 5px;
+    }
+
+    .nw {
+      left: -5px;
+      top: -5px;
+      cursor: nw-resize;
+    }
+
+    .ne {
+      right: -5px;
+      top: -5px;
+      cursor: ne-resize;
+    }
+
+    .sw {
+      left: -5px;
+      bottom: -5px;
+      cursor: sw-resize;
+    }
+
+    .se {
+      right: -5px;
+      bottom: -5px;
+      cursor: se-resize;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="draggable">
+    <div id='nw' class="corner nw"></div>
+    <div id='ne' class="corner ne"></div>
+    <div id='sw' class="corner sw"></div>
+    <div id='se' class="corner se"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const draggable = document.querySelector('.draggable');
+      const resizers = document.querySelectorAll('.corner');
+      draggable.onmousedown = mouseDown;
+      let shiftX = null;
+      let shiftY = null;
+      let selected = null;
+      let isResizing = false;
+      let currentResizer = null;
+      let prevResizerX;
+      let prevResizerY;
+
+      resizers.forEach(resizer => resizer.onmousedown = resizerMouseDown)
+
+      function resizerMouseDown(e) {
+        isResizing = true;
+        currentResizer = e.target.id;
+        const { clientX, clientY } = e;
+        prevResizerX = clientX;
+        prevResizerY = clientY;
+        window.addEventListener('mousemove', resizerMouseMove);
+        window.addEventListener('mouseup', resizerMouseUp);
+      }
+
+      function resizerMouseMove(e) {
+        const { clientX, clientY } = e;
+        const { width, height, top, left } = draggable.getBoundingClientRect(); 
+        if(currentResizer === 'nw') {
+          let differenceX = (prevResizerX - clientX)
+          let differenceY = (prevResizerY - clientY)
+          draggable.style.width = width + differenceX + 'px';
+          draggable.style.height = height + differenceY + 'px';
+          draggable.style.transform = `translate(${left-differenceX}px, ${top-differenceY}px)`
+
+          // alternative method using left/top
+          // draggable.style.left = left - differenceX + 'px';
+          // draggable.style.top = top - differenceY + 'px';
+        } else if (currentResizer === 'ne') {
+          let differenceX = (clientX - prevResizerX)
+          let differenceY = (prevResizerY - clientY)
+          draggable.style.width = width + differenceX + 'px';
+          draggable.style.height = height + differenceY + 'px';
+          draggable.style.transform = `translate(${left}px, ${top-differenceY}px)`
+
+          // alternative method using left/top
+          // draggable.style.top = top - differenceY + 'px';
+        } else if (currentResizer === 'sw') {
+          let differenceX = (prevResizerX - clientX)
+          let differenceY = (clientY - prevResizerY)
+          draggable.style.width = width + differenceX + 'px';
+          draggable.style.height = height + differenceY + 'px';
+          draggable.style.transform = `translate(${left- differenceX}px, ${top}px)`
+
+          // alternative method using left/top
+          // draggable.style.left = left - differenceX + 'px';
+          // draggable.style.top = top + 'px';
+        } else {
+          let differenceX = (clientX - prevResizerX)
+          let differenceY = (clientY - prevResizerY)
+          draggable.style.width = width + differenceX + 'px';
+          draggable.style.height = height + differenceY + 'px';
+        }
+        prevResizerX = clientX;
+        prevResizerY = clientY;
+      }
+
+      function resizerMouseUp(e) {
+        isResizing = false;
+        window.removeEventListener('mousemove', resizerMouseMove);
+        window.removeEventListener('mouseup', resizerMouseUp);
+        currentResizer = null;
+      }
+
+      function mouseDown(e) {
+        if (!isResizing) {
+          window.addEventListener('mousemove', mouseMove);
+          window.addEventListener('mouseup', mouseUp);
+          const { clientX, clientY } = e;
+          const { left, top } = e.target.getBoundingClientRect();
+          shiftX = clientX - left;
+          shiftY = clientY - top;
+        }
+      }
+
+      function mouseMove(e) {
+        const { clientX, clientY } = e;
+        const newX = clientX - shiftX;
+        const newY = clientY - shiftY;
+
+        // alternative method using left/top
+        // draggable.style.left = newX + 'px';
+        // draggable.style.top = newY + 'px';
+
+        draggable.style.transform = `translate(${newX}px, ${newY}px)`;
+      }
+
+      function mouseUp(e) {
+        window.removeEventListener('mousemove', mouseMove);
+        window.addEventListener('mouseup', mouseUp);
+      }
+    })
+  </script>
+</body>
+
+</html>

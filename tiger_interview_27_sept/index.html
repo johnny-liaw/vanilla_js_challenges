@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .draggable-container {}
+
+    .square {
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
+      border: 1px solid black;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .drop-container {
+      position: relative;
+      background: lightgrey;
+      width: 500px;
+      height: 500px;
+      border: 1px solid black;
+      display: flex;
+    }
+    .overall {
+      display: flex;
+    }
+    .dropped-square {
+      position: absolute;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overall">
+    <div class="draggable-container">
+      <div id="redSquare" class="square red" draggable='true'></div>
+      <!-- <div id="blueSquare" class="square blue" draggable='true'></div>
+      <div id="greenSquare" class="square green" draggable='true'></div> -->
+    </div>
+    <div class="drop-container"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const dropContainer = document.querySelector('.drop-container');
+      const dragContainer = document.querySelector('.draggable-container');
+      const draggables = document.querySelectorAll('.square');
+
+      draggables.forEach(draggable => {
+        draggable.ondragstart = handleDragStart;
+        draggable.ondragend = handleDragEnd;
+      })
+
+      dropContainer.ondrop = handleDrop;
+      dropContainer.ondragover = handleDragOver;
+
+      function handleDragStart(e) {
+        const { clientX, clientY } = e;
+        const { left, top } = e.target.getBoundingClientRect();
+        const [shiftX, shiftY] = [clientX - left, clientY - top];
+        const object = {
+          id: e.target.id,
+          shiftX,
+          shiftY
+        }; 
+        e.dataTransfer.setData('dragged', JSON.stringify(object));
+      }
+      
+      function handleDragEnd(e) {
+        e.dataTransfer.setData('dragged', null)
+      }
+
+      function handleDrop(e) {
+        const { id, shiftX, shiftY } = JSON.parse(e.dataTransfer.getData('dragged'));
+        const draggedItem = document.getElementById(id);
+        const cloneDraggedItem = draggedItem.cloneNode();
+        // cloneDraggedItem.onmousedown = handleMouseDown;
+        e.target.appendChild(cloneDraggedItem)
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+      }
+    })
+  </script>
+</body>
+
+</html>

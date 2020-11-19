@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            margin-top: 50px;
+            margin-left: 150px;
+            position: relative;
+            background-color: lightblue;
+            width: 500px;
+            height: 500px;
+        }
+        .draggable {
+            position: absolute;
+            background: red;
+            min-width: 50px;
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="draggable"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const draggable = document.querySelector('.draggable')
+            const container = document.querySelector('.container')
+            const shift = { 
+                x: null, 
+                y: null, 
+                xInv: null,
+                yInv: null,
+            }
+
+            draggable.addEventListener('mousedown', mouseDown)
+
+            function mouseDown(e) {
+                const { left, top, bottom, right } = e.target.getBoundingClientRect()
+                const { offsetWidth, offsetHeight } = e.target
+                shift.x = e.clientX - left
+                shift.y = e.clientY - top
+                shift.xInv = offsetWidth - shift.x
+                shift.yInv = offsetHeight - shift.y
+                window.addEventListener('mousemove', mouseMove)
+                window.addEventListener('mouseup', mouseUp)
+            }
+
+            function mouseMove(e) {
+                const { left, top, bottom, right } = container.getBoundingClientRect()
+                let newX = e.clientX - shift.x - left // if moved to right, pos
+                let newY = e.clientY - shift.y - top // if move down,
+                if(e.clientX - shift.x < left) newX = 0
+                if(e.clientX + shift.xInv > right) newX = right - left - shift.x - shift.xInv
+                if(e.clientY - shift.y < top) newY = 0
+                if(e.clientY + shift.yInv > bottom) newY = bottom - top - shift.y - shift.yInv
+                draggable.style.left = newX + 'px'
+                draggable.style.top = newY + 'px'
+            }
+
+            function mouseUp(e) {
+                shift.x = null
+                shift.y = null
+                shift.xInv = null
+                shift.yInv = null
+                e.target.removeEventListener('mouseup', mouseMove)
+                window.removeEventListener('mousemove', mouseMove)
+            }
+        })
+    </script>
+</body>
+</html>

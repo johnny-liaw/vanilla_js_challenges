@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    const data = {
+      ['Text box 1']: 'Tiger',
+      ['Number box 2']: 11,
+      ['Group box 1']: {
+        ['Text box 3']: 'Tiger',
+        ['Number box 4']: 11,
+        ['Group box 2']: {
+          ['Text box 5']: 'Tiger',
+          ['Number box 6']: 11
+        }
+      }
+    }
+
+    const body = document.querySelector('body');
+
+    const handleKeyUp = (e) => {
+      console.log(e)
+      e.target.data[e.target.name] = e.target.value;
+    }
+    
+    function appendInputToBody(data, level=0) {
+      for(let inputDesc in data) {
+        const inputType = inputDesc.split(' ')[0].toLowerCase();
+        if(inputType === 'group') {
+          appendInputToBody(data[inputDesc], level + 1);
+          return;
+        }
+        const leftMargin = 20 * level + 'px';
+        const inputDiv = document.createElement('input');
+        inputDiv.type = inputType;
+        inputDiv.onkeyup = handleKeyUp;
+        inputDiv.data = data;
+        inputDiv.name = inputDesc;
+        const inputName = document.createElement('div');
+        inputName.textContent = inputDesc;
+        inputName.style.marginLeft = leftMargin;
+        inputDiv.style.marginLeft = leftMargin;
+        body.appendChild(inputName);
+        body.appendChild(inputDiv);
+      }
+    }
+    appendInputToBody(data);
+  </script>
+</body>
+
+</html>

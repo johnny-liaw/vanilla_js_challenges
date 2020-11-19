@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .timer-container {
+            display: flex;
+            font-size: 20px;
+            width: 100px;
+            border: 1px solid blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="timer-container">
+        <div class="minutes">0</div>
+        <div>:</div>
+        <div class="seconds">0</div>
+        <div>:</div>
+        <div class="millis">0</div>
+    </div>
+    <button id='resetBtn'>Reset me!</button>
+    <button id='pauseBtn'>Puase Timer</button>
+    <button id='startBtn'>Start Timer</button>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const minutes = document.querySelector('.minutes');
+            const seconds = document.querySelector('.seconds');
+            const millis = document.querySelector('.millis');
+            const resetBtn = document.querySelector('#resetBtn');
+            const pauseBtn = document.querySelector('#pauseBtn');
+            const startBtn = document.querySelector('#startBtn');
+
+            function tick() {
+                incrementMilliSeconds()
+            }
+
+            function incrementMilliSeconds() {
+                let millisNumber = parseInt(millis.textContent)
+                millisNumber++
+                if(millisNumber === 1000) {
+                    millisNumber = 0
+                    incrementSeconds()
+                }
+                millis.textContent = millisNumber
+            }
+            
+            function incrementSeconds() {
+                let secondsNumber = parseInt(seconds.textContent)
+                secondsNumber++
+                if(secondsNumber === 60) {
+                    secondsNumber = 0
+                    incrementMinutes()
+                }
+                seconds.textContent = secondsNumber
+            }
+
+            function incrementMinutes() {
+                let minutesNumber = parseInt(minutes.textContent)
+                minutesNumber++
+                minutes.textContent = minutesNumber
+            }
+
+            function resetTimer() {
+                millis.textContent = 0
+                seconds.textContent = 0
+                minutes.textContent = 0
+            }
+
+            function pauseTimer() {
+                window.clearInterval(interval)
+            }
+
+            function startTimer() {
+                interval = window.setInterval(tick, 1);
+            }
+
+            resetBtn.onclick = resetTimer
+            pauseBtn.onclick = pauseTimer
+            startBtn.onclick = startTimer
+
+        });
+    </script>
+</body>
+
+</html>

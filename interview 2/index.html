@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+    	box-size: border-box;
+    }
+    .container {
+    	height: 300px;
+      width: 600px;
+      display: flex;
+      border: 1px solid black;
+    }
+    
+    .btn {
+    	flex: 1;
+      cursor: pointer;
+    }
+    
+    .tiles-container {
+      width: 400px;
+      height: 100%;
+    	overflow-x: hidden;
+      flex: 6;
+      display: flex;
+    }
+    
+    .tile {
+        /* transition: linear 1s; */
+        transition-property: margin-left;
+  		transition-duration: 1s;
+    	width: 150px;
+      height: 100%;
+      background-color: dodgerblue;
+      color: white;
+      margin-right: 2px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="btn prev" data-prev>Prev</div>
+    
+    <div class="tiles-container">
+      <div class="tile">tile 1</div> 
+      <div class="tile">tile 2</div> 
+      <div class="tile">tile 3</div> 
+      <div class="tile">tile 4</div>
+      <div class="tile">tile 5</div> 
+      <div class="tile">tile 6</div> 
+    </div> 
+
+    <div class="btn next" data-next>Next</div> 
+  </div>
+</body>
+</html>
+<script>
+  const btnNext = document.querySelector('[data-next]');
+  const btnPrev = document.querySelector('[data-prev]');
+  const firstTile = document.querySelector('.tile:first-child');
+  let margin = 0;
+
+  const moveToRight = () => {
+    if(margin === 0) return;
+    margin += 152;
+    firstTile.style.setProperty('margin-left', `${margin}px`);
+  };
+
+  const moveToLeft = () => {
+    if(margin === -456) return;
+    margin -= 152;
+    firstTile.style.setProperty('margin-left', `${margin}px`);
+  };
+
+  btnNext.addEventListener('click', moveToLeft);
+
+  btnPrev.addEventListener('click', moveToRight);
+
+</script>
